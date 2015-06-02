@@ -1,0 +1,3 @@
+[submodule "chowders"]
+	path = chowders
+	url = https://github.com/nguyenmp/chowders
