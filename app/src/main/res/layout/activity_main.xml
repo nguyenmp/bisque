@@ -5,6 +5,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/content_view"
+        android:background="#CCCCCC"
         android:scrollbars="vertical"
         android:visibility="gone"
         android:layout_width="match_parent"
