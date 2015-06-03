@@ -89,12 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 content.setVisibility(View.VISIBLE);
                 empty.setVisibility(View.GONE);
 
-                content.setAdapter(new Adapter(posts));
+                content.setAdapter(new PostsAdapter(posts));
             }
         }
     }
 
-    private static class PostViewHolder extends RecyclerView.ViewHolder {
+    public static class PostViewHolder extends RecyclerView.ViewHolder {
         public final CardView cardView;
         public final TextView text, tags;
         public PostViewHolder(View itemView) {
@@ -105,42 +105,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private static class Adapter extends RecyclerView.Adapter<PostViewHolder> {
+    private static class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         private final Post[] posts;
 
-        private Adapter(Post[] posts) {
+        private PostsAdapter(Post[] posts) {
             this.posts = posts;
         }
 
         @Override
-        public PostViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        public PostViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
             Context context = viewGroup.getContext();
             LayoutInflater inflater = LayoutInflater.from(context);
-            View postView = inflater.inflate(R.layout.list_item_post, viewGroup, false);
-            return new PostViewHolder(postView);
+            return PostPresenter.inflateListItem(inflater, viewGroup);
         }
 
         @Override
-        public void onBindViewHolder(PostViewHolder postViewHolder, int i) {
-            Post post = posts[i];
-            View.OnClickListener listener = new CardClickListener(post);
-            postViewHolder.text.setText(post.title);
-            postViewHolder.tags.setText(Arrays.toString(post.tags));
+        public void onBindViewHolder(PostViewHolder postViewHolder, int position) {
+            Post post = posts[position];
+            View.OnClickListener listener = new PostItemClickListener(post);
             postViewHolder.cardView.setOnClickListener(listener);
+            PostPresenter.bindListItem(postViewHolder, post);
         }
 
-        private static class CardClickListener implements View.OnClickListener {
+        private static class PostItemClickListener implements View.OnClickListener {
             private final Post post;
 
-            private CardClickListener(Post post) {
+            private PostItemClickListener(Post post) {
                 this.post = post;
             }
 
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
-                String link = post.url;
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                Intent intent = new Intent(context, StoryActivity.class);
+                intent.putExtra(StoryActivity.EXTRA_POST, post);
+                intent.setData(Uri.parse(post.comments_url));
                 context.startActivity(intent);
             }
         }
@@ -148,6 +147,18 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return posts.length;
+        }
+    }
+
+    public static class PostPresenter {
+        public static PostViewHolder inflateListItem(LayoutInflater inflater, ViewGroup viewGroup) {
+            View postView = inflater.inflate(R.layout.list_item_post, viewGroup, false);
+            return new PostViewHolder(postView);
+        }
+
+        public static void bindListItem(PostViewHolder holder, Post post) {
+            holder.text.setText(post.title);
+            holder.tags.setText(Arrays.toString(post.tags));
         }
     }
 }

@@ -3,5 +3,6 @@
     <string name="no_x_found">No %s Found</string>
     <string name="could_not_load_x">Could Not Load %s</string>
     <string name="posts">Posts</string>
+    <string name="comments">Comments</string>
     <string name="error">Oh no!</string>
 </resources>
