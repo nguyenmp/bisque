@@ -1,9 +1,14 @@
 package ninja.mpnguyen.bisque;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import ninja.mpnguyen.chowders.nio.FrontPage;
 import ninja.mpnguyen.chowders.things.Post;
@@ -22,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        swipeRefreshLayout.setColorSchemeColors(Color.RED, Color.BLUE, Color.GREEN);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.content_view);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -80,10 +89,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static class PostViewHolder extends RecyclerView.ViewHolder {
-        public final TextView text;
+        public final CardView cardView;
+        public final TextView text, tags;
         public PostViewHolder(View itemView) {
             super(itemView);
+            cardView = (CardView) itemView.findViewById(R.id.card_view);
             this.text = (TextView) itemView.findViewById(R.id.info_text);
+            this.tags = (TextView) itemView.findViewById(R.id.tags);
         }
     }
 
@@ -105,7 +117,26 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(PostViewHolder postViewHolder, int i) {
             Post post = posts[i];
+            View.OnClickListener listener = new CardClickListener(post);
             postViewHolder.text.setText(post.title);
+            postViewHolder.tags.setText(Arrays.toString(post.tags));
+            postViewHolder.cardView.setOnClickListener(listener);
+        }
+
+        private static class CardClickListener implements View.OnClickListener {
+            private final Post post;
+
+            private CardClickListener(Post post) {
+                this.post = post;
+            }
+
+            @Override
+            public void onClick(View v) {
+                Context context = v.getContext();
+                String link = post.url;
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                context.startActivity(intent);
+            }
         }
 
         @Override
