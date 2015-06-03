@@ -20,6 +20,8 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.List;
 
+import ninja.mpnguyen.bisque.posts.PostPresenter;
+import ninja.mpnguyen.bisque.posts.PostViewHolder;
 import ninja.mpnguyen.chowders.nio.StoryFetcher;
 import ninja.mpnguyen.chowders.things.Comment;
 import ninja.mpnguyen.chowders.things.Post;
@@ -139,7 +141,7 @@ public class StoryActivity extends AppCompatActivity {
             if (itemType == TYPE_COMMENT) {
                 return CommentPresenter.inflateListItem(inflater, viewGroup);
             } else {
-                return MainActivity.PostPresenter.inflateListItem(inflater, viewGroup);
+                return PostPresenter.inflateListItem(inflater, viewGroup);
             }
         }
 
@@ -161,8 +163,8 @@ public class StoryActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder storyViewHolder, int position) {
             if (getItemViewType(position) == TYPE_POST) {
-                MainActivity.PostPresenter.bindListItem((MainActivity.PostViewHolder) storyViewHolder, story);
-                ((MainActivity.PostViewHolder) storyViewHolder).cardView.setOnClickListener(new PostClickListener(story));
+                PostPresenter.bindListItem((PostViewHolder) storyViewHolder, story);
+                ((PostViewHolder) storyViewHolder).cardView.setOnClickListener(new PostClickListener(story));
             } else {
                 Comment comment = story.comments[position - 1];
                 CommentPresenter.bindListItem((CommentViewHolder) storyViewHolder, comment);
