@@ -9,6 +9,7 @@
             <intent-filter>
                 <action android:name="ANDROID.INTENT.ACTION.MAIN" />
                 <category android:name="ANDROID.INTENT.CATEGORY.LAUNCHER" />
+                <category android:name="ANDROID.INTENT.CATEGORY.DEFAULT" />
             </intent-filter>
         </activity>
     </application>
