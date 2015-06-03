@@ -3,14 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/content_view"
-        style="@style/CardsList"
-        android:background="#CCCCCC"
-        android:scrollbars="vertical"
-        android:visibility="gone"
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:id="@+id/swipe">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/content_view"
+            style="@style/CardsList"
+            android:background="#CCCCCC"
+            android:scrollbars="vertical"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
     <ProgressBar
         android:layout_width="wrap_content"
