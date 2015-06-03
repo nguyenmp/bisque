@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Bisque</string>
-    <string name="no_posts_found">No Posts Found</string>
+    <string name="no_x_found">No %s Found</string>
+    <string name="could_not_load_x">Could Not Load %s</string>
+    <string name="posts">Posts</string>
+    <string name="error">Oh no!</string>
 </resources>

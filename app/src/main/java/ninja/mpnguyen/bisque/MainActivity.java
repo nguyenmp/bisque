@@ -38,15 +38,16 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         View progress = findViewById(R.id.progress_view);
-        View empty = findViewById(R.id.empty_view);
+        TextView empty = (TextView) findViewById(R.id.empty_view);
         new FetchTask(progress, recyclerView, empty).execute();
     }
 
     private static class FetchTask extends AsyncTask<Void, Void, Post[]> {
-        private final View progress, empty;
+        private final View progress;
+        private final TextView empty;
         private final RecyclerView content;
 
-        private FetchTask(View progress, RecyclerView content, View empty) {
+        private FetchTask(View progress, RecyclerView content, TextView empty) {
             this.progress = progress;
             this.content = content;
             this.empty = empty;
@@ -78,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
                 progress.setVisibility(View.GONE);
                 content.setVisibility(View.GONE);
                 empty.setVisibility(View.VISIBLE);
+
+                Context context = progress.getContext();
+                String pattern = posts != null ? context.getString(R.string.no_x_found) : context.getString(R.string.could_not_load_x);
+                String value = context.getString(R.string.posts);
+                empty.setText(String.format(pattern, value));
             } else {
                 progress.setVisibility(View.GONE);
                 content.setVisibility(View.VISIBLE);
