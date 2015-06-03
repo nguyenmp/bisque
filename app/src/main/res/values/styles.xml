@@ -6,4 +6,17 @@
         <item name="colorPrimary">@android:color/holo_red_light</item>
     </style>
 
+    <style name="CardsList">
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="CardContainer">
+        <item name="android:clickable">true</item>
+        <item name="android:foreground">?selectableItemBackground</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+    </style>
 </resources>

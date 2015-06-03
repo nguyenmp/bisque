@@ -5,6 +5,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/content_view"
+        style="@style/CardsList"
         android:background="#CCCCCC"
         android:scrollbars="vertical"
         android:visibility="gone"

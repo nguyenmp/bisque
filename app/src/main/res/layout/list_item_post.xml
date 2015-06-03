@@ -8,16 +8,14 @@
 
     <!-- A CardView that contains a TextView -->
     <android.support.v7.widget.CardView
+        style="@style/CardContainer"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        card_view:cardCornerRadius="4dp"
         android:id="@+id/card_view"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="#EEEEEE"
-        android:clickable="true"
-        android:foreground="?selectableItemBackground"
-        card_view:cardCornerRadius="4dp">
+        android:background="#EEEEEE">
         
         <LinearLayout
             android:orientation="vertical"
