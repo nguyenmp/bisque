@@ -50,7 +50,7 @@ public class StoryActivity extends AppCompatActivity {
             progress.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             empty.setVisibility(View.GONE);
-            recyclerView.setAdapter(new Adapter(new Story(post)));
+            recyclerView.swapAdapter(new Adapter(new Story(post)), false);
         }
 
         String short_id = getShortId(intent.getData());
@@ -80,15 +80,6 @@ public class StoryActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progress.setVisibility(View.VISIBLE);
-            content.setVisibility(View.GONE);
-            empty.setVisibility(View.GONE);
-        }
-
-        @Override
         protected Story doInBackground(Void... params) {
             try {
                 return StoryFetcher.get(short_id);
@@ -115,7 +106,7 @@ public class StoryActivity extends AppCompatActivity {
                 content.setVisibility(View.VISIBLE);
                 empty.setVisibility(View.GONE);
 
-                content.setAdapter(new Adapter(story));
+                content.swapAdapter(new Adapter(story), false);
             }
         }
     }
@@ -136,7 +127,9 @@ public class StoryActivity extends AppCompatActivity {
         private final Story story;
 
         private Adapter(Story story) {
+            super();
             this.story = story;
+            setHasStableIds(true);
         }
 
         @Override
@@ -147,6 +140,15 @@ public class StoryActivity extends AppCompatActivity {
                 return CommentPresenter.inflateListItem(inflater, viewGroup);
             } else {
                 return MainActivity.PostPresenter.inflateListItem(inflater, viewGroup);
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            if (position == 0) {
+                return 0; // Just force the story to have it's own unique id as 0
+            } else {
+                return story.comments[position - 1].short_id.hashCode();
             }
         }
 
