@@ -8,18 +8,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ninja.mpnguyen.bisque.StoryActivity;
+import ninja.mpnguyen.bisque.views.posts.PostItemViewHolder;
 import ninja.mpnguyen.bisque.views.posts.PostViewHolder;
 import ninja.mpnguyen.bisque.views.posts.PostsPresenter;
 import ninja.mpnguyen.chowders.things.Comment;
 import ninja.mpnguyen.chowders.things.Post;
 import ninja.mpnguyen.chowders.things.Story;
 
-public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_POST = 0, TYPE_COMMENT = 1;
     private final Story story;
 
-    public Adapter(Story story) {
+    public StoryAdapter(Story story) {
         super();
         this.story = story;
         setHasStableIds(true);
@@ -32,7 +32,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (itemType == TYPE_COMMENT) {
             return CommentPresenter.inflateListItem(inflater, viewGroup);
         } else {
-            return PostsPresenter.inflateListItem(inflater, viewGroup);
+            return PostsPresenter.inflateItem(inflater, viewGroup);
         }
     }
 
@@ -54,8 +54,8 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder storyViewHolder, int position) {
         if (getItemViewType(position) == TYPE_POST) {
-            PostsPresenter.bindListItem((PostViewHolder) storyViewHolder, story);
-            ((PostViewHolder) storyViewHolder).cardView.setOnClickListener(new PostClickListener(story));
+            PostsPresenter.bindItem((PostViewHolder) storyViewHolder, story);
+            ((PostViewHolder) storyViewHolder).itemView.setOnClickListener(new PostClickListener(story));
         } else {
             Comment comment = story.comments[position - 1];
             CommentPresenter.bindListItem((CommentViewHolder) storyViewHolder, comment);

@@ -15,7 +15,7 @@ import java.util.List;
 
 import ninja.mpnguyen.bisque.nio.FetcherTask;
 import ninja.mpnguyen.bisque.nio.StoryFetcherTask;
-import ninja.mpnguyen.bisque.views.comments.Adapter;
+import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
 import ninja.mpnguyen.chowders.things.Post;
 import ninja.mpnguyen.chowders.things.Story;
 
@@ -39,7 +39,7 @@ public class StoryActivity extends AppCompatActivity {
         Post post = intent.hasExtra(EXTRA_POST) ? (Post) intent.getSerializableExtra(EXTRA_POST) : null;
         if (post != null) {
             recyclerView.setVisibility(View.VISIBLE);
-            recyclerView.swapAdapter(new Adapter(new Story(post)), false);
+            recyclerView.swapAdapter(new StoryAdapter(new Story(post)), false);
         }
 
         String short_id = getShortId(intent.getData());
@@ -73,13 +73,13 @@ public class StoryActivity extends AppCompatActivity {
         @Override
         public void onSuccess(@NonNull Story story) {
             refreshLayout.setRefreshing(false);
-            content.swapAdapter(new Adapter(story), false);
+            content.swapAdapter(new StoryAdapter(story), false);
         }
 
         @Override
         public void onError() {
             refreshLayout.setRefreshing(false);
-            content.swapAdapter(new Adapter(null), false);
+            content.swapAdapter(new StoryAdapter(null), false);
         }
     }
 

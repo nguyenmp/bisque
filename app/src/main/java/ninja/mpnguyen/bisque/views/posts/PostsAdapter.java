@@ -40,11 +40,11 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (getItemViewType(position) == TYPE_POST) {
-            PostViewHolder postViewHolder = (PostViewHolder) viewHolder;
+            PostItemViewHolder postItemViewHolder = (PostItemViewHolder) viewHolder;
             Post post = posts[position];
             View.OnClickListener listener = new PostItemClickListener(activityGet.get(), post);
-            postViewHolder.cardView.setOnClickListener(listener);
-            PostsPresenter.bindListItem(postViewHolder, post);
+            postItemViewHolder.cardView.setOnClickListener(listener);
+            PostsPresenter.bindListItem(postItemViewHolder, post);
         } else {
             ErrorViewHolder errorViewHolder = (ErrorViewHolder) viewHolder;
             Context context = errorViewHolder.errorView.getContext();
