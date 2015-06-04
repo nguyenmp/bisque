@@ -14,7 +14,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.bisque.nio.FetcherTask;
+import ninja.mpnguyen.bisque.nio.RefreshingListener;
 import ninja.mpnguyen.bisque.nio.StoryFetcherTask;
 import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
 import ninja.mpnguyen.chowders.things.Post;
@@ -57,7 +57,7 @@ public class StoryActivity extends AppCompatActivity implements SwipeRefreshLayo
 
     @Override
     public void onRefresh() {
-        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
         if (swipeRefreshLayout == null) return;
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.content_view);
@@ -69,40 +69,29 @@ public class StoryActivity extends AppCompatActivity implements SwipeRefreshLayo
         new StoryFetcherTask(listener, short_id).execute();
     }
 
-    private static class StoryFetchedListener implements FetcherTask.Listener<Story> {
-        private final WeakReference<SwipeRefreshLayout> refreshLayoutRef;
+    private static class StoryFetchedListener extends RefreshingListener<Story> {
         private final WeakReference<RecyclerView> contentRef;
 
         private StoryFetchedListener(SwipeRefreshLayout refreshLayout, RecyclerView content) {
-            this.refreshLayoutRef = new WeakReference<>(refreshLayout);
+            super(refreshLayout);
             this.contentRef = new WeakReference<>(content);
         }
 
         @Override
-        public void onStart() {
-            SwipeRefreshLayout refreshLayout = refreshLayoutRef.get();
-            if (refreshLayout == null) return;
-
-            refreshLayout.setRefreshing(true);
-        }
-
-        @Override
         public void onSuccess(@NonNull Story story) {
-            SwipeRefreshLayout refreshLayout = refreshLayoutRef.get();
-            RecyclerView content = contentRef.get();
-            if (refreshLayout == null || content == null) return;
+            super.onSuccess(story);
 
-            refreshLayout.setRefreshing(false);
+            RecyclerView content = contentRef.get();
+            if (content == null) return;
             content.swapAdapter(new StoryAdapter(story), false);
         }
 
         @Override
         public void onError() {
-            SwipeRefreshLayout refreshLayout = refreshLayoutRef.get();
-            RecyclerView content = contentRef.get();
-            if (refreshLayout == null || content == null) return;
+            super.onError();
 
-            refreshLayout.setRefreshing(false);
+            RecyclerView content = contentRef.get();
+            if (content == null) return;
             content.swapAdapter(new StoryAdapter(null), false);
         }
     }

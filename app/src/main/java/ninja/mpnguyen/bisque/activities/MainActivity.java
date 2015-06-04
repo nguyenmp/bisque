@@ -12,8 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import java.lang.ref.WeakReference;
 
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
 import ninja.mpnguyen.bisque.nio.PostsFetcherTask;
+import ninja.mpnguyen.bisque.nio.RefreshingListener;
+import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
 import ninja.mpnguyen.chowders.things.Post;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
@@ -45,31 +46,25 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         new PostsFetcherTask(listener).execute();
     }
 
-    private static class PostsFetchedListener implements PostsFetcherTask.Listener<Post[]> {
-        private final SwipeRefreshLayout refreshLayout;
+    private static class PostsFetchedListener extends RefreshingListener<Post[]> {
         private final RecyclerView content;
         private final WeakReference<Activity> activityRef;
 
         private PostsFetchedListener(Activity activity, SwipeRefreshLayout refreshLayout, RecyclerView content) {
-            this.refreshLayout = refreshLayout;
+            super(refreshLayout);
             this.content = content;
             this.activityRef = new WeakReference<>(activity);
         }
 
         @Override
-        public void onStart() {
-            refreshLayout.setRefreshing(true);
-        }
-
-        @Override
         public void onSuccess(@NonNull Post[] posts) {
-            refreshLayout.setRefreshing(false);
+            super.onSuccess(posts);
             content.swapAdapter(new PostsAdapter(posts, activityRef.get()), false);
         }
 
         @Override
         public void onError() {
-            refreshLayout.setRefreshing(false);
+            super.onError();
             content.swapAdapter(new PostsAdapter(null, activityRef.get()), false);
         }
     }
