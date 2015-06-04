@@ -17,7 +17,7 @@ public class PostsPresenter {
 
     public static void bindListItem(PostItemViewHolder holder, Post post) {
         holder.text.setText(post.title);
-        holder.tags.setText(Arrays.toString(post.tags));
+        holder.tags.setText(Arrays.toString(post.tags) + "    " + post.comment_count + " comments");
     }
 
     public static PostViewHolder inflateItem(LayoutInflater inflater, ViewGroup viewGroup) {
@@ -27,6 +27,6 @@ public class PostsPresenter {
 
     public static void bindItem(PostViewHolder holder, Post post) {
         holder.text.setText(post.title);
-        holder.tags.setText(Arrays.toString(post.tags));
+        holder.tags.setText(Arrays.toString(post.tags) + "    " + post.comment_count + " comments");
     }
 }
