@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ninja.mpnguyen.bisque.views.posts.PostItemViewHolder;
+import ninja.mpnguyen.bisque.R;
+import ninja.mpnguyen.bisque.views.errors.ErrorPresenter;
+import ninja.mpnguyen.bisque.views.errors.ErrorViewHolder;
 import ninja.mpnguyen.bisque.views.posts.PostViewHolder;
 import ninja.mpnguyen.bisque.views.posts.PostsPresenter;
 import ninja.mpnguyen.chowders.things.Comment;
@@ -16,7 +18,7 @@ import ninja.mpnguyen.chowders.things.Post;
 import ninja.mpnguyen.chowders.things.Story;
 
 public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final int TYPE_POST = 0, TYPE_COMMENT = 1;
+    private static final int TYPE_POST = 0, TYPE_COMMENT = 1, TYPE_ERROR = 2, TYPE_EMPTY = 3;
     private final Story story;
 
     public StoryAdapter(Story story) {
@@ -31,40 +33,70 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         LayoutInflater inflater = LayoutInflater.from(context);
         if (itemType == TYPE_COMMENT) {
             return CommentPresenter.inflateListItem(inflater, viewGroup);
-        } else {
+        } else if (itemType == TYPE_POST){
             return PostsPresenter.inflateItem(inflater, viewGroup);
+        } else {
+            return ErrorPresenter.inflateListItem(inflater, viewGroup);
         }
     }
 
     @Override
     public long getItemId(int position) {
-        if (position == 0) {
+        int type = getItemViewType(position);
+        if (type == TYPE_POST) {
             return 0; // Just force the story to have it's own unique id as 0
-        } else {
+        } else if (type == TYPE_COMMENT) {
             return story.comments[position - 1].short_id.hashCode();
+        } else if (type == TYPE_ERROR){
+            return -1;
+        } else {
+            return -2;
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) return TYPE_POST;
-        else return TYPE_COMMENT;
+        if (story == null) return TYPE_ERROR;
+        else {
+            if (position == 0) return TYPE_POST;
+            else if (story.comments == null) return TYPE_ERROR;
+            else if (story.comments.length == 0) return TYPE_EMPTY;
+            else return TYPE_COMMENT;
+        }
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder storyViewHolder, int position) {
-        if (getItemViewType(position) == TYPE_POST) {
-            PostsPresenter.bindItem((PostViewHolder) storyViewHolder, story);
-            ((PostViewHolder) storyViewHolder).itemView.setOnClickListener(new PostClickListener(story));
-        } else {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        int type = getItemViewType(position);
+        if (type == TYPE_POST) {
+            PostsPresenter.bindItem((PostViewHolder) viewHolder, story);
+            ((PostViewHolder) viewHolder).itemView.setOnClickListener(new PostClickListener(story));
+        } else if (type == TYPE_COMMENT){
             Comment comment = story.comments[position - 1];
-            CommentPresenter.bindListItem((CommentViewHolder) storyViewHolder, comment);
+            CommentPresenter.bindListItem((CommentViewHolder) viewHolder, comment);
+        } else if (type == TYPE_ERROR) {
+            ErrorViewHolder errorViewHolder = (ErrorViewHolder) viewHolder;
+            Context context = errorViewHolder.errorView.getContext();
+            String pattern = context.getString(R.string.could_not_load_x);
+            String value = context.getString(R.string.comments);
+            String message = String.format(pattern, value);
+            ErrorPresenter.bindListItem(errorViewHolder, message);
+        } else if (type == TYPE_EMPTY) {
+            ErrorViewHolder errorViewHolder = (ErrorViewHolder) viewHolder;
+            Context context = errorViewHolder.errorView.getContext();
+            String pattern = context.getString(R.string.no_x_found);
+            String value = context.getString(R.string.comments);
+            String message = String.format(pattern, value);
+            ErrorPresenter.bindListItem(errorViewHolder, message);
         }
     }
 
     @Override
     public int getItemCount() {
-        return story.comments.length + 1;
+        if (story == null) return 1;
+        else if (story.comments == null) return 2;
+        else if (story.comments.length == 0) return 2;
+        else return story.comments.length + 1;
     }
 
     private static class PostClickListener implements View.OnClickListener {
