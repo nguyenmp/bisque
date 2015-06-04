@@ -1,4 +1,4 @@
-package ninja.mpnguyen.bisque.posts;
+package ninja.mpnguyen.bisque.views.posts;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +9,7 @@ import java.util.Arrays;
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.chowders.things.Post;
 
-public class PostPresenter {
+public class PostsPresenter {
     public static PostViewHolder inflateListItem(LayoutInflater inflater, ViewGroup viewGroup) {
         View postView = inflater.inflate(R.layout.list_item_post, viewGroup, false);
         return new PostViewHolder(postView);

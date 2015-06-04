@@ -1,6 +1,5 @@
 package ninja.mpnguyen.bisque;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,15 +7,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import ninja.mpnguyen.bisque.posts.PostFetcherTask;
-import ninja.mpnguyen.bisque.posts.PostsAdapter;
+import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
+import ninja.mpnguyen.bisque.nio.PostsFetcherTask;
 import ninja.mpnguyen.chowders.things.Post;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,66 +21,50 @@ public class MainActivity extends AppCompatActivity {
 
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
         swipeRefreshLayout.setColorSchemeColors(Color.RED, Color.BLUE, Color.GREEN);
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.content_view);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        View progress = findViewById(R.id.progress_view);
-        TextView empty = (TextView) findViewById(R.id.empty_view);
-
-        PostFetchedListener listener = new PostFetchedListener(progress, recyclerView, empty);
-        new PostFetcherTask(listener).execute();
+        onRefresh();
     }
 
-    private static class PostFetchedListener implements PostFetcherTask.Listener {
-        private final View progress;
-        private final RecyclerView content;
-        private final TextView empty;
+    @Override
+    public void onRefresh() {
+        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.content_view);
+        if (swipeRefreshLayout == null || recyclerView == null) return;
 
-        private PostFetchedListener(View progress, RecyclerView content, TextView empty) {
-            this.progress = progress;
+        PostsFetchedListener listener = new PostsFetchedListener(swipeRefreshLayout, recyclerView);
+        new PostsFetcherTask(listener).execute();
+    }
+
+    private static class PostsFetchedListener implements PostsFetcherTask.Listener<Post[]> {
+        private final SwipeRefreshLayout refreshLayout;
+        private final RecyclerView content;
+
+        private PostsFetchedListener(SwipeRefreshLayout refreshLayout, RecyclerView content) {
+            this.refreshLayout = refreshLayout;
             this.content = content;
-            this.empty = empty;
         }
 
         @Override
         public void onStart() {
-            progress.setVisibility(View.VISIBLE);
-            content.setVisibility(View.GONE);
-            empty.setVisibility(View.GONE);
+            refreshLayout.setRefreshing(true);
         }
 
         @Override
         public void onSuccess(@NonNull Post[] posts) {
-
-            if (posts.length == 0) {
-                progress.setVisibility(View.GONE);
-                content.setVisibility(View.GONE);
-                empty.setVisibility(View.VISIBLE);
-
-                Context context = progress.getContext();
-                String pattern = context.getString(R.string.no_x_found);
-                String value = context.getString(R.string.posts);
-                empty.setText(String.format(pattern, value));
-            } else {
-                progress.setVisibility(View.GONE);
-                content.setVisibility(View.VISIBLE);
-                empty.setVisibility(View.GONE);
-
-                content.setAdapter(new PostsAdapter(posts));
-            }
+            refreshLayout.setRefreshing(false);
+            content.swapAdapter(new PostsAdapter(posts), false);
         }
 
         @Override
         public void onError() {
-            Context context = progress.getContext();
-            String pattern = context.getString(R.string.no_x_found);
-            String value = context.getString(R.string.posts);
-
-            String message = String.format(pattern, value);
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+            refreshLayout.setRefreshing(false);
+            content.swapAdapter(new PostsAdapter(null), false);
         }
     }
 }

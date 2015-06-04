@@ -1,4 +1,4 @@
-package ninja.mpnguyen.bisque.posts;
+package ninja.mpnguyen.bisque.views.posts;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
