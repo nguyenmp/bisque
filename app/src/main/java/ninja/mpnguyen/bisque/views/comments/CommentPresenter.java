@@ -17,5 +17,9 @@ public class CommentPresenter {
     public static void bindListItem(CommentViewHolder holder, Comment comment) {
         holder.text.setText(Html.fromHtml(comment.comment));
         holder.tags.setText(comment.commenting_user.username);
+
+        ViewGroup.LayoutParams layoutParams = holder.padding.getLayoutParams();
+        layoutParams.width = comment.indent_level * 40;
+        holder.padding.setLayoutParams(layoutParams);
     }
 }

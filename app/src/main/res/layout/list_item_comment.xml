@@ -1,47 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
-    <!-- A CardView that contains a TextView -->
-    <android.support.v7.widget.CardView
-        style="@style/CardContainer"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        card_view:cardCornerRadius="4dp"
-        android:id="@+id/card_view"
-        android:layout_gravity="center"
+    <View
+        android:id="@+id/comment_padding"
+        android:layout_width="30dp"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#EEEEEE">
-        
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/info_text"
-                style="@android:style/TextAppearance.Small"
-                android:textColor="#ff333333"
-                android:padding="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/author"
+            style="@android:style/TextAppearance.Small"
+            android:textColor="#ff8a8a8a"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/tags"
-                style="@android:style/TextAppearance.Small"
-                android:textColor="#ff8a8a8a"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/comment_text"
+            style="@android:style/TextAppearance.Small"
+            android:textColor="#ff333333"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-        </LinearLayout>
-
-    </android.support.v7.widget.CardView>
+    </LinearLayout>
 
 </LinearLayout>

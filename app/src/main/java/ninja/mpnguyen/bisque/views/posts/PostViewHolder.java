@@ -1,6 +1,5 @@
 package ninja.mpnguyen.bisque.views.posts;
 
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -12,7 +11,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
 
     public PostViewHolder(View itemView) {
         super(itemView);
-        this.text = (TextView) itemView.findViewById(R.id.info_text);
-        this.tags = (TextView) itemView.findViewById(R.id.tags);
+        this.text = (TextView) itemView.findViewById(R.id.comment_text);
+        this.tags = (TextView) itemView.findViewById(R.id.author);
     }
 }

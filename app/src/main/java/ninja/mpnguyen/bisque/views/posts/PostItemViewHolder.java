@@ -14,7 +14,7 @@ public class PostItemViewHolder extends RecyclerView.ViewHolder {
     public PostItemViewHolder(View itemView) {
         super(itemView);
         cardView = (CardView) itemView.findViewById(R.id.card_view);
-        this.text = (TextView) itemView.findViewById(R.id.info_text);
-        this.tags = (TextView) itemView.findViewById(R.id.tags);
+        this.text = (TextView) itemView.findViewById(R.id.comment_text);
+        this.tags = (TextView) itemView.findViewById(R.id.author);
     }
 }
