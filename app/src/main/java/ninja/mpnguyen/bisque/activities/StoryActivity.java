@@ -1,4 +1,4 @@
-package ninja.mpnguyen.bisque;
+package ninja.mpnguyen.bisque.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -13,6 +13,7 @@ import android.view.View;
 
 import java.util.List;
 
+import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.nio.FetcherTask;
 import ninja.mpnguyen.bisque.nio.StoryFetcherTask;
 import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
@@ -20,7 +21,7 @@ import ninja.mpnguyen.chowders.things.Post;
 import ninja.mpnguyen.chowders.things.Story;
 
 public class StoryActivity extends AppCompatActivity {
-    public static final String EXTRA_POST = "ninja.mpnguyen.bisque.StoryActivity.EXTRA_POST";
+    public static final String EXTRA_POST = "ninja.mpnguyen.bisque.activities.StoryActivity.EXTRA_POST";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,4 +1,4 @@
-package ninja.mpnguyen.bisque;
+package ninja.mpnguyen.bisque.activities;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 
 import java.lang.ref.WeakReference;
 
+import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
 import ninja.mpnguyen.bisque.nio.PostsFetcherTask;
 import ninja.mpnguyen.chowders.things.Post;

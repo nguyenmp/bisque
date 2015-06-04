@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import java.lang.ref.WeakReference;
 
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.bisque.StoryActivity;
+import ninja.mpnguyen.bisque.activities.StoryActivity;
 import ninja.mpnguyen.bisque.views.errors.ErrorPresenter;
 import ninja.mpnguyen.bisque.views.errors.ErrorViewHolder;
 import ninja.mpnguyen.chowders.things.Post;
