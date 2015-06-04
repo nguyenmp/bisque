@@ -1,5 +1,6 @@
 package ninja.mpnguyen.bisque;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,6 +8,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
+import java.lang.ref.WeakReference;
 
 import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
 import ninja.mpnguyen.bisque.nio.PostsFetcherTask;
@@ -37,17 +40,19 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.content_view);
         if (swipeRefreshLayout == null || recyclerView == null) return;
 
-        PostsFetchedListener listener = new PostsFetchedListener(swipeRefreshLayout, recyclerView);
+        PostsFetchedListener listener = new PostsFetchedListener(this, swipeRefreshLayout, recyclerView);
         new PostsFetcherTask(listener).execute();
     }
 
     private static class PostsFetchedListener implements PostsFetcherTask.Listener<Post[]> {
         private final SwipeRefreshLayout refreshLayout;
         private final RecyclerView content;
+        private final WeakReference<Activity> activityRef;
 
-        private PostsFetchedListener(SwipeRefreshLayout refreshLayout, RecyclerView content) {
+        private PostsFetchedListener(Activity activity, SwipeRefreshLayout refreshLayout, RecyclerView content) {
             this.refreshLayout = refreshLayout;
             this.content = content;
+            this.activityRef = new WeakReference<>(activity);
         }
 
         @Override
@@ -58,13 +63,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         @Override
         public void onSuccess(@NonNull Post[] posts) {
             refreshLayout.setRefreshing(false);
-            content.swapAdapter(new PostsAdapter(posts), false);
+            content.swapAdapter(new PostsAdapter(posts, activityRef.get()), false);
         }
 
         @Override
         public void onError() {
             refreshLayout.setRefreshing(false);
-            content.swapAdapter(new PostsAdapter(null), false);
+            content.swapAdapter(new PostsAdapter(null, activityRef.get()), false);
         }
     }
 }

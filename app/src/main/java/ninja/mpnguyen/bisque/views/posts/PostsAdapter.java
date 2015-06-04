@@ -1,12 +1,16 @@
 package ninja.mpnguyen.bisque.views.posts;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.lang.ref.WeakReference;
 
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.StoryActivity;
@@ -17,9 +21,11 @@ import ninja.mpnguyen.chowders.things.Post;
 public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int TYPE_POST = 0, TYPE_ERROR = 1, TYPE_EMPTY = 2;
     private final Post[] posts;
+    private final WeakReference<Activity> activityGet;
 
-    public PostsAdapter(Post[] posts) {
+    public PostsAdapter(Post[] posts, Activity activity) {
         this.posts = posts;
+        this.activityGet = new WeakReference<>(activity);
     }
 
     @Override
@@ -36,7 +42,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (getItemViewType(position) == TYPE_POST) {
             PostViewHolder postViewHolder = (PostViewHolder) viewHolder;
             Post post = posts[position];
-            View.OnClickListener listener = new PostItemClickListener(post);
+            View.OnClickListener listener = new PostItemClickListener(activityGet.get(), post);
             postViewHolder.cardView.setOnClickListener(listener);
             PostsPresenter.bindListItem(postViewHolder, post);
         } else {
@@ -64,19 +70,24 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     private static class PostItemClickListener implements View.OnClickListener {
+        private final WeakReference<Activity> activityRef;
         private final Post post;
 
-        private PostItemClickListener(Post post) {
+        private PostItemClickListener(Activity activity, Post post) {
+            this.activityRef = new WeakReference<>(activity);
             this.post = post;
         }
 
         @Override
         public void onClick(View v) {
-            Context context = v.getContext();
-            Intent intent = new Intent(context, StoryActivity.class);
+            Activity activity = activityRef.get();
+            if (activity == null) return;
+            Intent intent = new Intent(activity, StoryActivity.class);
             intent.putExtra(StoryActivity.EXTRA_POST, post);
             intent.setData(Uri.parse(post.comments_url));
-            context.startActivity(intent);
+
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, v, "card_selection_transform");
+            activity.startActivity(intent, options.toBundle());
         }
     }
 }
