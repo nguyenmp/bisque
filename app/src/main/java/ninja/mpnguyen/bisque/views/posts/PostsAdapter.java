@@ -85,9 +85,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             Intent intent = new Intent(activity, StoryActivity.class);
             intent.putExtra(StoryActivity.EXTRA_POST, post);
             intent.setData(Uri.parse(post.comments_url));
-
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, v, "card_selection_transform");
-            activity.startActivity(intent, options.toBundle());
+            activity.startActivity(intent);
         }
     }
 }

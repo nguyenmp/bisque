@@ -10,11 +10,10 @@
         style="@style/CardContainer"
         card_view:cardCornerRadius="4dp"
         android:id="@+id/card_view"
-        android:transitionName="card_selection_transform"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#EEEEEE">
+        android:background="@color/background_card_white">
 
         <include layout="@layout/view_post" />
 

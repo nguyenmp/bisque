@@ -7,5 +7,9 @@
         <item name="android:colorPrimary">@android:color/holo_red_light</item>
         <item name="android:colorPrimaryDark">@android:color/holo_red_dark</item>
         <item name="android:colorAccent">@android:color/holo_red_light</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowTransitionBackgroundFadeDuration">@android:integer/config_shortAnimTime</item>
     </style>
 </resources>
