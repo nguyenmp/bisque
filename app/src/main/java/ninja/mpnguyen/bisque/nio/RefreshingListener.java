@@ -26,13 +26,14 @@ import java.lang.ref.WeakReference;
  * https://stackoverflow.com/questions/26858692/swiperefreshlayout-setrefreshing-not-showing-indicator-initially
  */
 public class RefreshingListener<T> implements FetcherTask.Listener<T> {
+    public volatile boolean enabled = true;
     private final WeakReference<SwipeRefreshLayout> refreshRef;
 
     private final Runnable callback = new Runnable() {
         @Override
         public void run() {
             final SwipeRefreshLayout refreshLayout = refreshRef.get();
-            if (refreshLayout == null) return;
+            if (refreshLayout == null || enabled == false) return;
             refreshLayout.setRefreshing(true);
         }
     };
@@ -57,13 +58,16 @@ public class RefreshingListener<T> implements FetcherTask.Listener<T> {
     }
 
     private void showLoading() {
+        enabled = true;
         final SwipeRefreshLayout refreshLayout = refreshRef.get();
         if (refreshLayout == null) return;
 
-        refreshLayout.postDelayed(callback, 100);
+        refreshLayout.postDelayed(callback, 1000);
     }
 
     private void hideLoading() {
+        enabled = false;
+
         SwipeRefreshLayout refreshLayout = refreshRef.get();
         if (refreshLayout == null) return;
 

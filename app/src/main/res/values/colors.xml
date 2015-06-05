@@ -3,4 +3,5 @@
     <color name="text_gray">#ff8a8a8a</color>
     <color name="text_black">#ff333333</color>
     <color name="background_card_white">#EEEEEE</color>
+    <color name="gray_background">#CCCCCC</color>
 </resources>

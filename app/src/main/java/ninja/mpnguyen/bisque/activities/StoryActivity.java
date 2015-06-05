@@ -37,13 +37,18 @@ public class StoryActivity extends AppCompatActivity implements SwipeRefreshLayo
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        Intent intent = getIntent();
-        Post post = intent.hasExtra(EXTRA_POST) ? (Post) intent.getSerializableExtra(EXTRA_POST) : null;
-        if (post != null) {
-            recyclerView.swapAdapter(new StoryAdapter(new Story(post)), false);
+        Story storyFromIntent = getStoryFromIntent();
+        if (storyFromIntent != null) {
+            recyclerView.swapAdapter(new StoryAdapter(storyFromIntent), false);
         }
 
         onRefresh();
+    }
+
+    private Story getStoryFromIntent() {
+        Intent intent = getIntent();
+        Post post = intent.hasExtra(EXTRA_POST) ? (Post) intent.getSerializableExtra(EXTRA_POST) : null;
+        return new Story(post);
     }
 
     private String getShortId(Uri uri) {
@@ -65,16 +70,18 @@ public class StoryActivity extends AppCompatActivity implements SwipeRefreshLayo
 
         Intent intent = getIntent();
         String short_id = getShortId(intent.getData());
-        StoryFetchedListener listener = new StoryFetchedListener(swipeRefreshLayout, recyclerView);
+        StoryFetchedListener listener = new StoryFetchedListener(swipeRefreshLayout, recyclerView, getStoryFromIntent());
         new StoryFetcherTask(listener, short_id).execute();
     }
 
     private static class StoryFetchedListener extends RefreshingListener<Story> {
         private final WeakReference<RecyclerView> contentRef;
+        private final Story cachedStory;
 
-        private StoryFetchedListener(SwipeRefreshLayout refreshLayout, RecyclerView content) {
+        private StoryFetchedListener(SwipeRefreshLayout refreshLayout, RecyclerView content, Story cachedStory) {
             super(refreshLayout);
             this.contentRef = new WeakReference<>(content);
+            this.cachedStory = cachedStory;
         }
 
         @Override
@@ -92,7 +99,7 @@ public class StoryActivity extends AppCompatActivity implements SwipeRefreshLayo
 
             RecyclerView content = contentRef.get();
             if (content == null) return;
-            content.swapAdapter(new StoryAdapter(null), false);
+            content.swapAdapter(new StoryAdapter(cachedStory), false);
         }
     }
 
