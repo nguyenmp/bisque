@@ -5,4 +5,6 @@
     <string name="posts">Posts</string>
     <string name="comments">Comments</string>
     <string name="error">Oh no!</string>
+    <string name="loading">Loading</string>
+    <string name="loading_x">Loading %s</string>
 </resources>

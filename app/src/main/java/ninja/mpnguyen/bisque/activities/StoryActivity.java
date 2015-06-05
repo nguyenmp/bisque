@@ -38,9 +38,7 @@ public class StoryActivity extends AppCompatActivity implements SwipeRefreshLayo
         recyclerView.setLayoutManager(layoutManager);
 
         Story storyFromIntent = getStoryFromIntent();
-        if (storyFromIntent != null) {
-            recyclerView.swapAdapter(new StoryAdapter(storyFromIntent), false);
-        }
+        recyclerView.swapAdapter(new StoryAdapter(storyFromIntent, true), false);
 
         onRefresh();
     }
@@ -90,7 +88,7 @@ public class StoryActivity extends AppCompatActivity implements SwipeRefreshLayo
 
             RecyclerView content = contentRef.get();
             if (content == null) return;
-            content.swapAdapter(new StoryAdapter(story), false);
+            content.swapAdapter(new StoryAdapter(story, false), false);
         }
 
         @Override
@@ -99,7 +97,7 @@ public class StoryActivity extends AppCompatActivity implements SwipeRefreshLayo
 
             RecyclerView content = contentRef.get();
             if (content == null) return;
-            content.swapAdapter(new StoryAdapter(cachedStory), false);
+            content.swapAdapter(new StoryAdapter(cachedStory, false), false);
         }
     }
 

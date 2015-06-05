@@ -13,17 +13,21 @@ import ninja.mpnguyen.bisque.views.errors.ErrorPresenter;
 import ninja.mpnguyen.bisque.views.errors.ErrorViewHolder;
 import ninja.mpnguyen.bisque.views.posts.PostViewHolder;
 import ninja.mpnguyen.bisque.views.posts.PostsPresenter;
+import ninja.mpnguyen.bisque.views.progress.ProgressPresenter;
+import ninja.mpnguyen.bisque.views.progress.ProgressViewHolder;
 import ninja.mpnguyen.chowders.things.Comment;
 import ninja.mpnguyen.chowders.things.Post;
 import ninja.mpnguyen.chowders.things.Story;
 
 public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final int TYPE_POST = 0, TYPE_COMMENT = 1, TYPE_ERROR = 2, TYPE_EMPTY = 3;
+    private static final int TYPE_POST = 0, TYPE_COMMENT = 1, TYPE_ERROR = 2, TYPE_EMPTY = 3, TYPE_LOADING = 4;
     private final Story story;
+    private final boolean showLoading;
 
-    public StoryAdapter(Story story) {
+    public StoryAdapter(Story story, boolean showLoading) {
         super();
         this.story = story;
+        this.showLoading = showLoading;
         setHasStableIds(true);
     }
 
@@ -35,8 +39,10 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return CommentPresenter.inflateListItem(inflater, viewGroup);
         } else if (itemType == TYPE_POST){
             return PostsPresenter.inflateItem(inflater, viewGroup);
-        } else {
+        } else if (itemType == TYPE_ERROR || itemType == TYPE_EMPTY) {
             return ErrorPresenter.inflateListItem(inflater, viewGroup);
+        } else {
+            return ProgressPresenter.inflateListItem(inflater, viewGroup);
         }
     }
 
@@ -49,16 +55,19 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return story.comments[position - 1].short_id.hashCode();
         } else if (type == TYPE_ERROR){
             return -1;
-        } else {
+        } else if (type == TYPE_LOADING) {
             return -2;
+        } else {
+            return -3;
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (story == null) return TYPE_ERROR;
+        if (story == null) return showLoading ? TYPE_LOADING : TYPE_ERROR;
         else {
             if (position == 0) return TYPE_POST;
+            else if (showLoading) return TYPE_LOADING;
             else if (story.comments == null) return TYPE_ERROR;
             else if (story.comments.length == 0) return TYPE_EMPTY;
             else return TYPE_COMMENT;
@@ -88,12 +97,18 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             String value = context.getString(R.string.comments);
             String message = String.format(pattern, value);
             ErrorPresenter.bindListItem(errorViewHolder, message);
+        } else if (type == TYPE_LOADING) {
+            ProgressViewHolder progressViewHolder = (ProgressViewHolder) viewHolder;
+            Context context = progressViewHolder.loadingText.getContext();
+            String text = context.getString(R.string.comments);
+            ProgressPresenter.bindListItem(progressViewHolder, text);
         }
     }
 
     @Override
     public int getItemCount() {
         if (story == null) return 1;
+        else if (showLoading) return 2;
         else if (story.comments == null) return 2;
         else if (story.comments.length == 0) return 2;
         else return story.comments.length + 1;
