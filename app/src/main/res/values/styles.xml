@@ -4,6 +4,9 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@android:color/holo_red_light</item>
+
+        <!-- this disables animations between activities
+        because progress bars can't animate in that time -->
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
