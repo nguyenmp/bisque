@@ -25,12 +25,17 @@ public class PostsPresenter {
         Context context = holder.itemView.getContext();
         Resources resources = context.getResources();
         int titleColor = resources.getColor(titleColorRes);
-        holder.text.setTextColor(titleColor);
-        holder.text.setText(post.title);
+        holder.title.setTextColor(titleColor);
+        holder.title.setText(post.title);
 
-        holder.tags.setText(Arrays.toString(post.tags) + "    " + post.comment_count + " comments");
+        holder.tags.setText(Arrays.toString(post.tags));
 
-        holder.author.setOnClickListener(new View.OnClickListener() {
+        String authorship = context.getString(R.string.by_x, post.submitter_user.username);
+        String commentCount = context.getString(R.string.x_comments, post.comment_count);
+        String subheading = String.format("%s with %s", authorship, commentCount);
+        holder.subheading.setText(subheading);
+
+        holder.action_author.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
@@ -47,8 +52,7 @@ public class PostsPresenter {
         return new PostViewHolder(postView);
     }
 
-    public static void bindItem(PostViewHolder holder, Post post) {
-        holder.text.setText(post.title);
-        holder.tags.setText(Arrays.toString(post.tags) + "    " + post.comment_count + " comments");
+    public static void bindItem(PostViewHolder holder, StoredPost post) {
+        PostsPresenter.bindListItem(holder.vh, post);
     }
 }

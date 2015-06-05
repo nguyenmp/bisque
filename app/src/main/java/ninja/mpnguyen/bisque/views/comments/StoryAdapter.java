@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ninja.mpnguyen.bisque.R;
+import ninja.mpnguyen.bisque.things.StoredPost;
 import ninja.mpnguyen.bisque.views.errors.ErrorPresenter;
 import ninja.mpnguyen.bisque.views.errors.ErrorViewHolder;
 import ninja.mpnguyen.bisque.views.posts.PostViewHolder;
@@ -78,7 +79,7 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         int type = getItemViewType(position);
         if (type == TYPE_POST) {
-            PostsPresenter.bindItem((PostViewHolder) viewHolder, story);
+            PostsPresenter.bindItem((PostViewHolder) viewHolder, new StoredPost(story));
             ((PostViewHolder) viewHolder).itemView.setOnClickListener(new PostClickListener(story));
         } else if (type == TYPE_COMMENT){
             Comment comment = story.comments[position - 1];

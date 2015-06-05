@@ -13,18 +13,22 @@
     <style name="CardsList">
     </style>
 
-    <style name="CardContainer">
+    <style name="Ripple">
         <item name="android:clickable">true</item>
         <item name="android:foreground">?selectableItemBackground</item>
+    </style>
+
+    <style name="CardContainer" parent="Ripple">
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:layout_marginBottom">4dp</item>
         <item name="android:layout_marginLeft">8dp</item>
         <item name="android:layout_marginRight">8dp</item>
     </style>
 
-    <style name="StoryActionButton">
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style name="StoryActionButton" parent="Ripple">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:padding">4dp</item>
     </style>
 </resources>
