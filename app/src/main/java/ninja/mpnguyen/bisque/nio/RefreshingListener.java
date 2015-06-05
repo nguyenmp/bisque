@@ -48,7 +48,7 @@ public class RefreshingListener<T> implements FetcherTask.Listener<T> {
     }
 
     @Override
-    public void onSuccess(@NonNull T posts) {
+    public void onSuccess(@NonNull T result) {
         hideLoading();
     }
 

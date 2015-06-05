@@ -13,6 +13,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.StoryActivity" android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.UserActivity" android:parentActivityName=".activities.MainActivity" />
     </application>
 
 </manifest>

@@ -83,12 +83,12 @@ public class StoryActivity extends AppCompatActivity implements SwipeRefreshLayo
         }
 
         @Override
-        public void onSuccess(@NonNull Story story) {
-            super.onSuccess(story);
+        public void onSuccess(@NonNull Story result) {
+            super.onSuccess(result);
 
             RecyclerView content = contentRef.get();
             if (content == null) return;
-            content.swapAdapter(new StoryAdapter(story, false), false);
+            content.swapAdapter(new StoryAdapter(result, false), false);
         }
 
         @Override

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:transitionName="card_selection_transform"
     android:orientation="vertical"
     android:background="@color/background_card_white"
     android:layout_width="match_parent"
@@ -24,5 +23,36 @@
         android:paddingBottom="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            style="@style/StoryActionButton"
+            android:contentDescription="@string/comments"
+            android:id="@+id/story_action_comments"
+            android:src="@drawable/ic_editor_mode_comment_white" />
+
+        <ImageButton
+            style="@style/StoryActionButton"
+            android:contentDescription="@string/delete"
+            android:id="@+id/story_action_delete"
+            android:src="@drawable/ic_action_delete_white" />
+
+        <ImageButton
+            style="@style/StoryActionButton"
+            android:contentDescription="@string/mark_as_read"
+            android:id="@+id/story_action_read"
+            android:src="@drawable/ic_action_visibility_off_white" />
+
+        <ImageButton
+            style="@style/StoryActionButton"
+            android:contentDescription="@string/author"
+            android:id="@+id/story_action_author"
+            android:src="@drawable/ic_social_person_white" />
+
+    </LinearLayout>
 
 </LinearLayout>

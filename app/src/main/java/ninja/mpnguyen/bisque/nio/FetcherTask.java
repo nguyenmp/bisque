@@ -8,7 +8,7 @@ import java.lang.ref.WeakReference;
 public abstract class FetcherTask<T> extends AsyncTask<Void, Void, T> {
     public interface Listener<T> {
         void onStart();
-        void onSuccess(@NonNull T posts);
+        void onSuccess(@NonNull T result);
         void onError();
     }
 

@@ -13,6 +13,7 @@ import java.lang.ref.WeakReference;
 
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.activities.StoryActivity;
+import ninja.mpnguyen.bisque.things.StoredPost;
 import ninja.mpnguyen.bisque.views.errors.ErrorPresenter;
 import ninja.mpnguyen.bisque.views.errors.ErrorViewHolder;
 import ninja.mpnguyen.bisque.views.progress.ProgressPresenter;
@@ -49,7 +50,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             Post post = posts[position];
             View.OnClickListener listener = new PostItemClickListener(activityGet.get(), post);
             postItemViewHolder.cardView.setOnClickListener(listener);
-            PostsPresenter.bindListItem(postItemViewHolder, post);
+            PostsPresenter.bindListItem(postItemViewHolder, new StoredPost(post));
         } else if (type == TYPE_LOADING) {
             ProgressViewHolder progressViewHolder = (ProgressViewHolder) viewHolder;
             Context context = progressViewHolder.loadingText.getContext();
