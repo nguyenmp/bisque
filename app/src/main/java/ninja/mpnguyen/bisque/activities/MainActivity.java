@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
+        recyclerView.swapAdapter(new PostsAdapter(null, this, true), false);
         onRefresh();
     }
 
@@ -59,13 +60,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         @Override
         public void onSuccess(@NonNull Post[] posts) {
             super.onSuccess(posts);
-            content.swapAdapter(new PostsAdapter(posts, activityRef.get()), false);
+            content.swapAdapter(new PostsAdapter(posts, activityRef.get(), false), false);
         }
 
         @Override
         public void onError() {
             super.onError();
-            content.swapAdapter(new PostsAdapter(null, activityRef.get()), false);
+            content.swapAdapter(new PostsAdapter(null, activityRef.get(), false), false);
         }
     }
 }
