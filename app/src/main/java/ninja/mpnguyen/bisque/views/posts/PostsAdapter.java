@@ -96,9 +96,8 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public void onClick(View v) {
             Activity activity = activityRef.get();
             if (activity == null) return;
-            Intent intent = new Intent(activity, StoryActivity.class);
-            intent.putExtra(StoryActivity.EXTRA_POST, post.post);
-            intent.setData(Uri.parse(post.post.comments_url));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(post.post.url));
             activity.startActivity(intent);
 
 

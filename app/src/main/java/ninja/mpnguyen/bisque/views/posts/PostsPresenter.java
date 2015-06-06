@@ -3,6 +3,7 @@ package ninja.mpnguyen.bisque.views.posts;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 import ninja.mpnguyen.bisque.R;
+import ninja.mpnguyen.bisque.activities.StoryActivity;
 import ninja.mpnguyen.bisque.activities.UserActivity;
 import ninja.mpnguyen.bisque.databases.PostHelper;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
@@ -69,6 +71,25 @@ public class PostsPresenter {
                 intent.putExtra(UserActivity.EXTRA_USER, post.submitter_user);
                 intent.putExtra(UserActivity.EXTRA_USERNAME, post.submitter_user.username);
                 context.startActivity(intent);
+            }
+        });
+
+        holder.action_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Context context = v.getContext();
+                if (context == null) return;
+                Intent intent = new Intent(context, StoryActivity.class);
+                intent.putExtra(StoryActivity.EXTRA_POST, post);
+                intent.setData(Uri.parse(post.comments_url));
+                context.startActivity(intent);
+
+
+                metadata.read = true;
+                try {
+                    PostHelper.setMetadata(metadata, v.getContext());
+                } catch (SQLException ignored) {
+                }
             }
         });
 
