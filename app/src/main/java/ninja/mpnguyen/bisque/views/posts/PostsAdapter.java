@@ -32,6 +32,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.posts = posts;
         this.activityGet = new WeakReference<>(activity);
         this.loading = loading;
+        setHasStableIds(true);
     }
 
     @Override
@@ -74,6 +75,14 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         else if (posts == null) return TYPE_ERROR;
         else if (posts.length == 0) return TYPE_EMPTY;
         else return TYPE_POST;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (loading) return -1;
+        else if (posts == null) return -2;
+        else if (posts.length == 0) return -3;
+        else return posts[position].metadata.id;
     }
 
     @Override
