@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.fragments.PostsListFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class PostsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
