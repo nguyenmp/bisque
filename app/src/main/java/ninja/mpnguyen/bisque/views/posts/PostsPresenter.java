@@ -58,6 +58,9 @@ public class PostsPresenter {
         String subheading = String.format("%s with %s", authorship, commentCount);
         holder.subheading.setText(subheading);
 
+        int toggleReadResource = metadata.read ? R.drawable.ic_action_visibility_off_gray : R.drawable.ic_action_visibility_gray;
+        holder.action_toggle_read.setImageResource(toggleReadResource);
+
         holder.action_author.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
