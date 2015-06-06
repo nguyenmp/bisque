@@ -1,6 +1,8 @@
 package ninja.mpnguyen.bisque.databases;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.sql.SQLException;
@@ -14,7 +16,7 @@ public class MetafyTask extends FetcherTask<MetaDataedPost[]> {
     private final WeakReference<Context> contextRef;
     private final Post[] posts;
 
-    public MetafyTask(Context context, Post[] posts, FetcherTask.Listener<MetaDataedPost[]> listener) {
+    public MetafyTask(@Nullable Context context, @NonNull Post[] posts, FetcherTask.Listener<MetaDataedPost[]> listener) {
         super(listener);
         this.contextRef = new WeakReference<>(context);
         this.posts = posts;
