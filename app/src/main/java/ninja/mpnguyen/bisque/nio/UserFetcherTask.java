@@ -1,7 +1,7 @@
 package ninja.mpnguyen.bisque.nio;
 
-import ninja.mpnguyen.chowders.nio.UserFetcher;
-import ninja.mpnguyen.chowders.things.User;
+import ninja.mpnguyen.chowders.nio.json.UserFetcher;
+import ninja.mpnguyen.chowders.things.json.User;
 
 public class UserFetcherTask extends FetcherTask<User> {
     private final String username;

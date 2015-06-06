@@ -1,7 +1,7 @@
 package ninja.mpnguyen.bisque.nio;
 
-import ninja.mpnguyen.chowders.nio.StoryFetcher;
-import ninja.mpnguyen.chowders.things.Story;
+import ninja.mpnguyen.chowders.nio.json.StoryFetcher;
+import ninja.mpnguyen.chowders.things.json.Story;
 
 public class StoryFetcherTask extends FetcherTask<Story> {
     private final String short_id;

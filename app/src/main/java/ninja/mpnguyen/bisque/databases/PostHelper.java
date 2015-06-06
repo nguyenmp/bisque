@@ -11,7 +11,7 @@ import java.util.Observable;
 
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
 import ninja.mpnguyen.bisque.things.PostMetadata;
-import ninja.mpnguyen.chowders.things.Post;
+import ninja.mpnguyen.chowders.things.json.Post;
 
 public class PostHelper extends Observable {
     public static PostHelper observable = new PostHelper();

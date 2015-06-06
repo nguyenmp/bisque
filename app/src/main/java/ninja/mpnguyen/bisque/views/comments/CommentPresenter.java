@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.chowders.things.Comment;
+import ninja.mpnguyen.chowders.things.json.Comment;
 
 public class CommentPresenter {
     public static CommentViewHolder inflateListItem(LayoutInflater inflater, ViewGroup viewGroup) {

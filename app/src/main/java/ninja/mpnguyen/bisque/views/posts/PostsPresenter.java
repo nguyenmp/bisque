@@ -18,7 +18,7 @@ import ninja.mpnguyen.bisque.activities.UserActivity;
 import ninja.mpnguyen.bisque.databases.PostHelper;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
 import ninja.mpnguyen.bisque.things.PostMetadata;
-import ninja.mpnguyen.chowders.things.Post;
+import ninja.mpnguyen.chowders.things.json.Post;
 
 public class PostsPresenter {
     public static PostItemViewHolder inflateListItem(LayoutInflater inflater, ViewGroup viewGroup) {

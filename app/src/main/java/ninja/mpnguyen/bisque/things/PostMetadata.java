@@ -5,7 +5,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
-import ninja.mpnguyen.chowders.things.Post;
+import ninja.mpnguyen.chowders.things.json.Post;
 
 @DatabaseTable
 public class PostMetadata implements Serializable {

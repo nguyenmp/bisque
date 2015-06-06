@@ -25,7 +25,7 @@ import ninja.mpnguyen.bisque.nio.PostsFetcherTask;
 import ninja.mpnguyen.bisque.nio.RefreshingListener;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
 import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
-import ninja.mpnguyen.chowders.things.Post;
+import ninja.mpnguyen.chowders.things.json.Post;
 
 public class PostsListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private final Observer postsObserver = new PostsObserver(this);

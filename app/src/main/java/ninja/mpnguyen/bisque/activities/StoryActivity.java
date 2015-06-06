@@ -17,8 +17,8 @@ import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.nio.RefreshingListener;
 import ninja.mpnguyen.bisque.nio.StoryFetcherTask;
 import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
-import ninja.mpnguyen.chowders.things.Post;
-import ninja.mpnguyen.chowders.things.Story;
+import ninja.mpnguyen.chowders.things.json.Post;
+import ninja.mpnguyen.chowders.things.json.Story;
 
 public class StoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     public static final String EXTRA_POST = "ninja.mpnguyen.bisque.activities.StoryActivity.EXTRA_POST";

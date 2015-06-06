@@ -11,7 +11,7 @@ import com.squareup.okhttp.HttpUrl;
 import com.squareup.picasso.Picasso;
 
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.chowders.things.User;
+import ninja.mpnguyen.chowders.things.json.User;
 
 public class UserPresenter {
 

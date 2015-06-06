@@ -1,6 +1,6 @@
 package ninja.mpnguyen.bisque.things;
 
-import ninja.mpnguyen.chowders.things.Post;
+import ninja.mpnguyen.chowders.things.json.Post;
 
 public class MetaDataedPost {
     public final PostMetadata metadata;

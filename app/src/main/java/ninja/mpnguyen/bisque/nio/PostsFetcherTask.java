@@ -4,8 +4,8 @@ import android.content.Context;
 
 import java.lang.ref.WeakReference;
 
-import ninja.mpnguyen.chowders.nio.FrontPage;
-import ninja.mpnguyen.chowders.things.Post;
+import ninja.mpnguyen.chowders.nio.json.FrontPage;
+import ninja.mpnguyen.chowders.things.json.Post;
 
 public class PostsFetcherTask extends FetcherTask<Post[]> {
     private final WeakReference<Context> contextRef;

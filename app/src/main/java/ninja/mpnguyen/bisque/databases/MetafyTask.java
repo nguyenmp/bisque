@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import ninja.mpnguyen.bisque.nio.FetcherTask;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
-import ninja.mpnguyen.chowders.things.Post;
+import ninja.mpnguyen.chowders.things.json.Post;
 
 public class MetafyTask extends FetcherTask<MetaDataedPost[]> {
     private final WeakReference<Context> contextRef;

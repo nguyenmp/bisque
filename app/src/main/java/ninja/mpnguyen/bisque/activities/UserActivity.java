@@ -13,7 +13,7 @@ import ninja.mpnguyen.bisque.nio.FetcherTask;
 import ninja.mpnguyen.bisque.nio.UserFetcherTask;
 import ninja.mpnguyen.bisque.views.user.UserPresenter;
 import ninja.mpnguyen.bisque.views.user.UserViewHolder;
-import ninja.mpnguyen.chowders.things.User;
+import ninja.mpnguyen.chowders.things.json.User;
 
 public class UserActivity extends AppCompatActivity {
     public static final String EXTRA_USER = "ninja.mpnguyen.bisque.activities.UserActivity.EXTRA_USER";

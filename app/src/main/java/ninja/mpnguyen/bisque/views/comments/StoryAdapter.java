@@ -20,9 +20,9 @@ import ninja.mpnguyen.bisque.views.posts.PostViewHolder;
 import ninja.mpnguyen.bisque.views.posts.PostsPresenter;
 import ninja.mpnguyen.bisque.views.progress.ProgressPresenter;
 import ninja.mpnguyen.bisque.views.progress.ProgressViewHolder;
-import ninja.mpnguyen.chowders.things.Comment;
-import ninja.mpnguyen.chowders.things.Post;
-import ninja.mpnguyen.chowders.things.Story;
+import ninja.mpnguyen.chowders.things.json.Comment;
+import ninja.mpnguyen.chowders.things.json.Post;
+import ninja.mpnguyen.chowders.things.json.Story;
 
 public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_POST = 0, TYPE_COMMENT = 1, TYPE_ERROR = 2, TYPE_EMPTY = 3, TYPE_LOADING = 4;

@@ -5,8 +5,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
-import ninja.mpnguyen.chowders.things.Post;
-import ninja.mpnguyen.chowders.things.User;
+import ninja.mpnguyen.chowders.things.json.Post;
+import ninja.mpnguyen.chowders.things.json.User;
 
 @DatabaseTable
 public class DatabaseCompatiblePost implements Serializable {
