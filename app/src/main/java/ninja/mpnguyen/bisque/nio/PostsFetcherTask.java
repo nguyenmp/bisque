@@ -2,16 +2,8 @@ package ninja.mpnguyen.bisque.nio;
 
 import android.content.Context;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
-
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
-import ninja.mpnguyen.bisque.databases.DatabaseHelper;
-import ninja.mpnguyen.bisque.things.MetaDataedPost;
-import ninja.mpnguyen.bisque.things.PostMetadata;
 import ninja.mpnguyen.chowders.nio.FrontPage;
 import ninja.mpnguyen.chowders.things.Post;
 

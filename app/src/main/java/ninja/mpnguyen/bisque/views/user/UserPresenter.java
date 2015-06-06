@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
 
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.chowders.things.User;

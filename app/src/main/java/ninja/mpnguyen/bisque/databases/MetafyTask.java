@@ -2,17 +2,12 @@ package ninja.mpnguyen.bisque.databases;
 
 import android.content.Context;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
-
 import java.lang.ref.WeakReference;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import ninja.mpnguyen.bisque.nio.FetcherTask;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
-import ninja.mpnguyen.bisque.things.PostMetadata;
 import ninja.mpnguyen.chowders.things.Post;
 
 public class MetafyTask extends FetcherTask<MetaDataedPost[]> {
