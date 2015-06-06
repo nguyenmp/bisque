@@ -3,8 +3,6 @@ package ninja.mpnguyen.bisque.nio;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import java.lang.ref.WeakReference;
-
 public abstract class FetcherTask<T> extends AsyncTask<Void, Void, T> {
     public interface Listener<T> {
         void onStart();
@@ -12,18 +10,16 @@ public abstract class FetcherTask<T> extends AsyncTask<Void, Void, T> {
         void onError();
     }
 
-    private final WeakReference<Listener<T>> listenerRef;
+    private final Listener<T> listener;
 
     public FetcherTask(Listener<T> listener) {
-        this.listenerRef = new WeakReference<>(listener);
+        this.listener = listener;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-
-        final Listener listener = listenerRef.get();
-        if (listener != null) listener.onStart();
+        listener.onStart();
     }
 
     @Override
@@ -40,9 +36,6 @@ public abstract class FetcherTask<T> extends AsyncTask<Void, Void, T> {
     @Override
     protected void onPostExecute(T result) {
         super.onPostExecute(result);
-
-        final Listener<T> listener = listenerRef.get();
-        if (listener == null) return;
 
         if (result == null) listener.onError();
         else listener.onSuccess(result);
