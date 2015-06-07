@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimary">@color/colorPrimary</item>
@@ -12,8 +12,9 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowTransitionBackgroundFadeDuration">@android:integer/config_shortAnimTime</item>
 
-        <!-- this disables animations between activities
-        because progress bars can't animate in that time -->
-        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 </resources>
