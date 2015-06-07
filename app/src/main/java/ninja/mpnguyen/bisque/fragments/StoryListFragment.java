@@ -12,6 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -98,6 +101,9 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
 
         Story storyFromIntent = getStoryFromArgs();
         recyclerView.swapAdapter(new StoryAdapter(storyFromIntent, true), false);
+
+        WebView webview = (WebView) v.findViewById(R.id.webview);
+        webview.loadUrl(getStoryFromArgs().url);
 
         return v;
     }
