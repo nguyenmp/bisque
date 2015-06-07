@@ -14,8 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
 import java.lang.ref.WeakReference;
 import java.util.List;
 
