@@ -1,6 +1,5 @@
 package ninja.mpnguyen.bisque.fragments;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,13 +27,25 @@ import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
 import ninja.mpnguyen.chowders.things.json.Post;
 
 public class PostsListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    public interface PostClickListener {
+        void onPostClicked(MetaDataedPost post);
+    }
+
     private final Observer postsObserver = new PostsObserver(this);
+
+    public void setListener(PostClickListener listener) {
+        this.listener = listener;
+    }
+
+    public PostClickListener listener = null;
 
     // TODO: I really don't like this global state... I should get rid of this
     private Post[] posts = null;
 
-    public static PostsListFragment newInstance() {
-        return new PostsListFragment();
+    public static PostsListFragment newInstance(PostClickListener listener) {
+        PostsListFragment f = new PostsListFragment();
+        f.setListener(listener);
+        return f;
     }
 
     @Nullable
@@ -54,7 +65,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        recyclerView.swapAdapter(new PostsAdapter(null, getActivity(), true), false);
+        recyclerView.swapAdapter(new PostsAdapter(null, true, listener), false);
 
         return result;
     }
@@ -92,7 +103,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
 
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.content_view);
-        PostsFetchedListener listener = new PostsFetchedListener(getActivity(), swipeRefreshLayout, recyclerView);
+        PostsFetchedListener listener = new PostsFetchedListener(this.listener, swipeRefreshLayout, recyclerView);
         new MetafyTask(getActivity(), posts, listener).execute();
     }
 
@@ -116,13 +127,13 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private static class PostsFetchedListener extends RefreshingListener<MetaDataedPost[]> {
-        private final WeakReference<Activity> activityRef;
+        private final PostClickListener listener;
         private final WeakReference<RecyclerView> recyclerRef;
 
-        private PostsFetchedListener(@Nullable Activity activity, @Nullable SwipeRefreshLayout refreshLayout, @Nullable RecyclerView content) {
+        private PostsFetchedListener(PostClickListener listener, @Nullable SwipeRefreshLayout refreshLayout, @Nullable RecyclerView content) {
             super(refreshLayout);
             this.recyclerRef = new WeakReference<>(content);
-            this.activityRef = new WeakReference<>(activity);
+            this.listener = listener;
         }
 
         @Override
@@ -131,7 +142,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
             RecyclerView recycler = recyclerRef.get();
             if (recycler == null) return;
 
-            recycler.swapAdapter(new PostsAdapter(result, activityRef.get(), false), false);
+            recycler.swapAdapter(new PostsAdapter(result, false, listener), false);
         }
 
         @Override
@@ -140,7 +151,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
             RecyclerView recycler = recyclerRef.get();
             if (recycler == null) return;
 
-            recycler.swapAdapter(new PostsAdapter(null, activityRef.get(), false), false);
+            recycler.swapAdapter(new PostsAdapter(null, false, listener), false);
         }
     }
 

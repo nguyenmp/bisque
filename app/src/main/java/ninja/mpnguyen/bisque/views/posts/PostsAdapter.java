@@ -1,22 +1,15 @@
 package ninja.mpnguyen.bisque.views.posts;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.lang.ref.WeakReference;
-import java.sql.SQLException;
-
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.bisque.databases.PostHelper;
+import ninja.mpnguyen.bisque.fragments.PostsListFragment;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
-import ninja.mpnguyen.bisque.things.PostMetadata;
 import ninja.mpnguyen.bisque.views.errors.ErrorPresenter;
 import ninja.mpnguyen.bisque.views.errors.ErrorViewHolder;
 import ninja.mpnguyen.bisque.views.progress.ProgressPresenter;
@@ -26,12 +19,12 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final int TYPE_POST = 0, TYPE_ERROR = 1, TYPE_EMPTY = 2, TYPE_LOADING = 3;
     private final MetaDataedPost[] posts;
     private final boolean loading;
-    private final WeakReference<Activity> activityGet;
+    private final PostsListFragment.PostClickListener listener;
 
-    public PostsAdapter(@Nullable MetaDataedPost[] posts, @Nullable Activity activity, boolean loading) {
+    public PostsAdapter(@Nullable MetaDataedPost[] posts, boolean loading, PostsListFragment.PostClickListener listener) {
         this.posts = posts;
-        this.activityGet = new WeakReference<>(activity);
         this.loading = loading;
+        this.listener = listener;
         setHasStableIds(true);
     }
 
@@ -51,7 +44,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (getItemViewType(position) == TYPE_POST && posts != null) {
             PostItemViewHolder postItemViewHolder = (PostItemViewHolder) viewHolder;
             MetaDataedPost post = posts[position];
-            View.OnClickListener listener = new PostItemClickListener(activityGet.get(), post);
+            View.OnClickListener listener = new PostItemClickListener(post, this.listener);
             postItemViewHolder.vh.cardView.setOnClickListener(listener);
             PostsPresenter.bindListItem(postItemViewHolder, new MetaDataedPost(post));
         } else if (type == TYPE_LOADING) {
@@ -93,29 +86,17 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     private static class PostItemClickListener implements View.OnClickListener {
-        private final WeakReference<Activity> activityRef;
         private final MetaDataedPost post;
+        private final PostsListFragment.PostClickListener listener;
 
-        private PostItemClickListener(Activity activity, MetaDataedPost post) {
-            this.activityRef = new WeakReference<>(activity);
+        private PostItemClickListener(MetaDataedPost post, PostsListFragment.PostClickListener listener) {
             this.post = post;
+            this.listener = listener;
         }
 
         @Override
         public void onClick(View v) {
-            Activity activity = activityRef.get();
-            if (activity == null) return;
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(post.post.url));
-            activity.startActivity(intent);
-
-
-            PostMetadata metadata = post.metadata;
-            metadata.read = true;
-            try {
-                PostHelper.setMetadata(metadata, v.getContext());
-            } catch (SQLException ignored) {
-            }
+            if (listener != null) listener.onPostClicked(post);
         }
     }
 }

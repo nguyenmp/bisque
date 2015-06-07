@@ -37,6 +37,7 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
 
         public Builder post(Post post) {
             this.post = post;
+            this.short_id = post.short_id;
             return this;
         }
 

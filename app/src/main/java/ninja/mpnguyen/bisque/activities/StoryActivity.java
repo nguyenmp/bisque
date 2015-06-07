@@ -29,7 +29,7 @@ public class StoryActivity extends AppCompatActivity {
                 .post(getStoryFromIntent())
                 .shortID(getShortId(getIntent().getData()))
                 .build();
-        t.add(R.id.content_main, f);
+        t.add(R.id.content_primary, f);
         t.commit();
     }
 
