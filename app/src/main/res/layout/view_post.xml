@@ -12,7 +12,7 @@
     <TextView
         android:id="@+id/post_title"
         style="@android:style/TextAppearance.Medium"
-        android:textColor="@color/text_black"
+        android:textColor="@color/dark_gray"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -20,7 +20,7 @@
         android:id="@+id/post_subheading"
         style="@android:style/TextAppearance.Small"
         android:text="by markerz with 32 comments"
-        android:textColor="@color/text_gray"
+        android:textColor="@color/medium_gray"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -41,18 +41,6 @@
 
             <ImageView
                 style="@style/StoryActionButton"
-                android:contentDescription="@string/comments"
-                android:id="@+id/post_action_comments"
-                android:src="@drawable/ic_editor_mode_comment_gray" />
-
-            <ImageView
-                style="@style/StoryActionButton"
-                android:contentDescription="@string/delete"
-                android:id="@+id/post_action_delete"
-                android:src="@drawable/ic_action_delete_gray" />
-
-            <ImageView
-                style="@style/StoryActionButton"
                 android:contentDescription="@string/mark_as_read"
                 android:id="@+id/post_action_read"
                 android:src="@drawable/ic_action_visibility_off_gray" />
@@ -63,13 +51,25 @@
                 android:id="@+id/post_action_author"
                 android:src="@drawable/ic_social_person_gray" />
 
+            <ImageView
+                style="@style/StoryActionButton"
+                android:contentDescription="@string/delete"
+                android:id="@+id/post_action_delete"
+                android:src="@drawable/ic_action_delete_gray" />
+
+            <ImageView
+                style="@style/StoryActionButton"
+                android:contentDescription="@string/comments"
+                android:id="@+id/post_action_comments"
+                android:src="@drawable/ic_editor_mode_comment_gray" />
+
         </LinearLayout>
 
         <TextView
             android:id="@+id/post_tags"
             style="@android:style/TextAppearance.Small"
             android:text="[Development, Artificial Intellegence, School]"
-            android:textColor="@color/text_gray"
+            android:textColor="@color/medium_gray"
             android:layout_toLeftOf="@id/post_actions_container"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"

@@ -4,7 +4,7 @@
     android:id="@+id/toolbar"
     android:minHeight="?attr/actionBarSize"
     android:background="@color/colorPrimary"
-    android:elevation="16dp"
+    android:elevation="12dp"
     android:paddingTop="@dimen/system_status_bar_height"
     android:theme="@style/ActionBar"
     android:layout_width="match_parent"
