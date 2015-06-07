@@ -32,7 +32,7 @@ public class PostsActivity extends AppCompatActivity
         // Seems to be a big in Android SDK
         // https://stackoverflow.com/questions/26525229/toolbar-navigation-icon-never-set
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_navigation_menu_black);
+        toolbar.setNavigationIcon(R.drawable.ic_navigation_menu_white);
         setSupportActionBar(toolbar);
 
         f.setUp(

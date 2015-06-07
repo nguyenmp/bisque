@@ -17,4 +17,9 @@
 
         <item name="android:windowTranslucentStatus">true</item>
     </style>
+
+    <style name="ActionBar">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorPrimaryInverse">@android:color/white</item>
+    </style>
 </resources>
