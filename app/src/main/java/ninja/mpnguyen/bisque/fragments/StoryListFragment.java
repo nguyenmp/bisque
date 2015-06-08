@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
@@ -111,6 +112,11 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         recyclerView.swapAdapter(new StoryAdapter(storyFromIntent, true), false);
 
         WebView webview = (WebView) v.findViewById(R.id.webview);
+        WebSettings settings = webview.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
+
         webview.loadUrl(getStoryFromArgs().url);
 
         final ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.webview_progress);
