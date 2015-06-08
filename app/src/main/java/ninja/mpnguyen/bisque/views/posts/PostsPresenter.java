@@ -82,7 +82,7 @@ public class PostsPresenter {
             public void onClick(View v) {
                 Context context = v.getContext();
                 if (context == null) return;
-                StoryActivity.showPost(context, post);
+                StoryActivity.showPost(context, post, true);
             }
         });
 

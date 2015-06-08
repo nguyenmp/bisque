@@ -44,7 +44,7 @@ public class PostsActivity extends AppCompatActivity
     }
 
     public void showPost(MetaDataedPost post) {
-        StoryActivity.showPost(this, post.post);
+        StoryActivity.showPost(this, post.post, false);
     }
 
     private static class PostClickListener implements PostsListFragment.PostClickListener {

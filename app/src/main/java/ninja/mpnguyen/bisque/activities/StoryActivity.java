@@ -19,11 +19,13 @@ import ninja.mpnguyen.chowders.things.json.Post;
 import ninja.mpnguyen.chowders.things.json.Story;
 
 public class StoryActivity extends AppCompatActivity {
-    public static final String EXTRA_POST = "ninja.mpnguyen.bisque.activities.StoryActivity.ARGUMENT_POST";
+    public static final String EXTRA_POST = "ninja.mpnguyen.bisque.activities.StoryActivity.EXTRA_POST";
+    public static final String EXTRA_COMMENTS = "ninja.mpnguyen.bisque.activities.StoryActivity.EXTRA_COMMENTS";
 
-    public static void showPost(Context context, Post post) {
+    public static void showPost(Context context, Post post, boolean commentsFirst) {
         Intent intent = new Intent(context, StoryActivity.class);
         intent.putExtra(StoryActivity.EXTRA_POST, post);
+        intent.putExtra(StoryActivity.EXTRA_COMMENTS, commentsFirst);
         intent.setData(Uri.parse(post.comments_url));
         context.startActivity(intent);
 
@@ -46,6 +48,7 @@ public class StoryActivity extends AppCompatActivity {
         StoryListFragment f = new StoryListFragment.Builder()
                 .post(getStoryFromIntent())
                 .shortID(getShortId(getIntent().getData()))
+                .showCommentsFirst(getIntent().getBooleanExtra(EXTRA_COMMENTS, false))
                 .build();
         t.add(R.id.content_primary, f);
         t.commit();

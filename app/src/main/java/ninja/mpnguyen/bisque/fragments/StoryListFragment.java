@@ -38,10 +38,12 @@ import ninja.mpnguyen.chowders.things.json.Story;
 public class StoryListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     public static final String ARGUMENT_POST = "ninja.mpnguyen.bisque.fragments.StoryListFragment.ARGUMENT_POST";
     public static final String ARGUMENT_SHORT_ID = "ninja.mpnguyen.bisque.fragments.StoryListFragment.ARGUMENT_SHORT_ID";
+    public static final String ARGUMENT_COMMENTS = "ninja.mpnguyen.bisque.fragments.StoryListFragment.ARGuMENT_COMMENTS";
 
     public static class Builder {
         private Post post = null;
         private String short_id = null;
+        private boolean showCommentsFirst = false;
 
         public Builder() {
             super();
@@ -63,13 +65,18 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
             return this;
         }
 
+        public Builder showCommentsFirst(boolean showCommentsFirst) {
+            this.showCommentsFirst = showCommentsFirst;
+            return this;
+        }
+
         public Builder shortID(String short_id) {
             this.short_id = short_id;
             return this;
         }
 
         public StoryListFragment build() {
-            return StoryListFragment.newInstance(post, short_id);
+            return StoryListFragment.newInstance(post, short_id, showCommentsFirst);
         }
 
         private static String getShortId(Uri uri) {
@@ -82,10 +89,11 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         }
     }
 
-    private static StoryListFragment newInstance(Post post, String short_id) {
+    private static StoryListFragment newInstance(Post post, String short_id, boolean showCommentsFirst) {
         Bundle args = new Bundle();
         args.putSerializable(ARGUMENT_POST, post);
         args.putString(ARGUMENT_SHORT_ID, short_id);
+        args.putBoolean(ARGUMENT_COMMENTS, showCommentsFirst);
 
         StoryListFragment f = new StoryListFragment();
         f.setArguments(args);
@@ -109,8 +117,8 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         recyclerView.setLayoutManager(layoutManager);
 
         Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
-        SlidingUpPanelLayout slider = (SlidingUpPanelLayout) v.findViewById(R.id.slidinglayout);
-        slider.setPanelSlideListener(new SlideListener(toolbar));
+        SlidingUpPanelLayout slidr = (SlidingUpPanelLayout) v.findViewById(R.id.slidinglayout);
+        slidr.setPanelSlideListener(new SlideListener(toolbar));
 
         Story storyFromIntent = getStoryFromArgs();
         recyclerView.swapAdapter(new StoryAdapter(storyFromIntent, true), false);
@@ -131,16 +139,27 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         View handle = inflater.inflate(R.layout.story_handle, toolbar, false);
         toolbar.addView(handle);
         View webbar = handle.findViewById(R.id.story_web_bar);
-        bindWebController(webbar, new WebControllerListener(webview));
+        bindWebController(webbar, new WebControllerListener(webview, slidr));
         View commentsbar = handle.findViewById(R.id.story_comments_bar);
-        bindComments(commentsbar, new CommentsControllerListener(getStoryFromArgs().comments_url, inflater.getContext()));
+        bindComments(commentsbar, new CommentsControllerListener(getStoryFromArgs().comments_url, inflater.getContext(), slidr));
 
         return v;
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                boolean showCommentsFirst = getArguments().getBoolean(ARGUMENT_COMMENTS);
+                if (showCommentsFirst) {
+                    SlidingUpPanelLayout slidr = (SlidingUpPanelLayout) view.findViewById(R.id.slidinglayout);
+                    slidr.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                }
+            }
+        }, 300);
 
         onRefresh();
     }
@@ -238,9 +257,11 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
 
     private static class WebControllerListener {
         private final WeakReference<WebView> webviewRef;
+        private final WeakReference<SlidingUpPanelLayout> slidrRef;
 
-        WebControllerListener(WebView webview) {
-            this.webviewRef = new WeakReference<WebView>(webview);
+        WebControllerListener(WebView webview, SlidingUpPanelLayout slidr) {
+            this.webviewRef = new WeakReference<>(webview);
+            this.slidrRef = new WeakReference<>(slidr);
         }
 
         public void onBackward() {
@@ -276,7 +297,10 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
             context.startActivity(intent);
         }
         public void onComments() {
-            // TODO: Implement this toggle
+            SlidingUpPanelLayout slidr = slidrRef.get();
+            if (slidr == null) return;
+
+            slidr.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         }
     }
 
@@ -304,10 +328,12 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
     private static class CommentsControllerListener {
         private final String url;
         private final WeakReference<Context> contextRef;
+        private final WeakReference<SlidingUpPanelLayout> slidrRef;
 
-        private CommentsControllerListener(String url, Context context) {
+        private CommentsControllerListener(String url, Context context, SlidingUpPanelLayout slidr) {
             this.url = url;
             this.contextRef = new WeakReference<>(context);
+            this.slidrRef = new WeakReference<>(slidr);
         }
 
         public void onBrowser() {
@@ -330,7 +356,10 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         }
 
         public void onLink() {
-            // TODO: Implement this toggle
+            SlidingUpPanelLayout slidr = slidrRef.get();
+            if (slidr == null) return;
+
+            slidr.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
     }
 
