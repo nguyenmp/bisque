@@ -13,25 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include layout="@layout/action_bar" />
+        <include layout="@layout/padded_action_bar" />
 
+        <!-- As the main content view, the view below consumes the entire
+             space available using match_parent in both dimensions. -->
         <FrameLayout
+            android:id="@+id/content_primary"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <!-- As the main content view, the view below consumes the entire
-                 space available using match_parent in both dimensions. -->
-            <FrameLayout
-                android:id="@+id/content_primary"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <FrameLayout
-                android:id="@+id/content_secondary"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </FrameLayout>
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 

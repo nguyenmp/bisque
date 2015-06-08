@@ -12,7 +12,6 @@ import java.lang.ref.WeakReference;
 import ninja.mpnguyen.bisque.NavigationDrawerFragment;
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.fragments.PostsListFragment;
-import ninja.mpnguyen.bisque.fragments.StoryListFragment;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
 
 public class PostsActivity extends AppCompatActivity
@@ -45,14 +44,7 @@ public class PostsActivity extends AppCompatActivity
     }
 
     public void showPost(MetaDataedPost post) {
-        FragmentManager fm = getSupportFragmentManager();
-        StoryListFragment f = new StoryListFragment.Builder()
-                .post(post.post)
-                .build();
-        fm.beginTransaction()
-                .replace(R.id.content_secondary, f)
-                .addToBackStack("content_secondary")
-                .commit();
+        StoryActivity.showPost(this, post.post);
     }
 
     private static class PostClickListener implements PostsListFragment.PostClickListener {

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        style="@style/StoryActionButton"
+        android:contentDescription="@string/mark_as_read"
+        android:layout_weight="1"
+        android:id="@+id/post_action_read"
+        android:src="@drawable/ic_navigation_arrow_back_white" />
+
+    <ImageView
+        style="@style/StoryActionButton"
+        android:contentDescription="@string/author"
+        android:layout_weight="1"
+        android:id="@+id/post_action_author"
+        android:src="@drawable/ic_navigation_arrow_forward_white" />
+
+    <ImageView
+        style="@style/StoryActionButton"
+        android:contentDescription="@string/delete"
+        android:layout_weight="1"
+        android:id="@+id/post_action_delete"
+        android:src="@drawable/ic_social_share_white" />
+
+    <ImageView
+        style="@style/StoryActionButton"
+        android:contentDescription="@string/comments"
+        android:layout_weight="1"
+        android:id="@+id/post_action_comments"
+        android:src="@drawable/ic_social_public_white" />
+
+    <ImageView
+        style="@style/StoryActionButton"
+        android:contentDescription="@string/comments"
+        android:layout_weight="1"
+        android:id="@+id/post_action_comments"
+        android:src="@drawable/ic_editor_mode_comment_white" />
+
+</LinearLayout>

@@ -9,10 +9,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -97,6 +100,9 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
+        SlidingUpPanelLayout slider = (SlidingUpPanelLayout) v.findViewById(R.id.slidinglayout);
+        slider.setPanelSlideListener(new SlideListener((Toolbar) v.findViewById(R.id.toolbar)));
+
         Story storyFromIntent = getStoryFromArgs();
         recyclerView.swapAdapter(new StoryAdapter(storyFromIntent, true), false);
 
@@ -168,6 +174,51 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
             RecyclerView content = contentRef.get();
             if (content == null) return;
             content.swapAdapter(new StoryAdapter(cachedStory, false), false);
+        }
+    }
+
+    private static class SlideListener implements SlidingUpPanelLayout.PanelSlideListener {
+        private final WeakReference<Toolbar> toolbarRef;
+
+        private SlideListener(Toolbar toolbar) {
+            this.toolbarRef = new WeakReference<>(toolbar);
+        }
+
+        @Override
+        public void onPanelSlide(View view, float v) {
+
+        }
+
+        @Override
+        public void onPanelCollapsed(View view) {
+            Toolbar toolbar = toolbarRef.get();
+            if (toolbar == null) return;
+
+            toolbar.removeAllViews();
+            LayoutInflater inflater = LayoutInflater.from(view.getContext());
+            View content = inflater.inflate(R.layout.web_bar, toolbar, false);
+            toolbar.addView(content);
+        }
+
+        @Override
+        public void onPanelExpanded(View view) {
+            Toolbar toolbar = toolbarRef.get();
+            if (toolbar == null) return;
+
+            toolbar.removeAllViews();
+            LayoutInflater inflater = LayoutInflater.from(view.getContext());
+            View content = inflater.inflate(R.layout.comments, toolbar, false);
+            toolbar.addView(content);
+        }
+
+        @Override
+        public void onPanelAnchored(View view) {
+
+        }
+
+        @Override
+        public void onPanelHidden(View view) {
+
         }
     }
 }

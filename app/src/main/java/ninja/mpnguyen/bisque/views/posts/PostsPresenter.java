@@ -3,7 +3,6 @@ package ninja.mpnguyen.bisque.views.posts;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,17 +78,7 @@ public class PostsPresenter {
             public void onClick(View v) {
                 Context context = v.getContext();
                 if (context == null) return;
-                Intent intent = new Intent(context, StoryActivity.class);
-                intent.putExtra(StoryActivity.EXTRA_POST, post);
-                intent.setData(Uri.parse(post.comments_url));
-                context.startActivity(intent);
-
-
-                metadata.read = true;
-                try {
-                    PostHelper.setMetadata(metadata, v.getContext());
-                } catch (SQLException ignored) {
-                }
+                StoryActivity.showPost(context, post);
             }
         });
 

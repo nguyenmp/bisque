@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        style="@style/StoryActionButton"
+        android:contentDescription="@string/mark_as_read"
+        android:layout_weight="1"
+        android:id="@+id/post_action_share"
+        android:src="@drawable/ic_social_share_white" />
+
+    <ImageView
+        style="@style/StoryActionButton"
+        android:contentDescription="@string/mark_as_read"
+        android:layout_weight="1"
+        android:id="@+id/post_action_open"
+        android:src="@drawable/ic_social_public_white" />
+
+    <ImageView
+        style="@style/StoryActionButton"
+        android:contentDescription="@string/comments"
+        android:layout_weight="1"
+        android:id="@+id/post_action_link"
+        android:src="@drawable/ic_content_link_white" />
+
+</LinearLayout>
