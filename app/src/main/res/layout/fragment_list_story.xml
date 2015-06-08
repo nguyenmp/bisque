@@ -10,10 +10,24 @@
     sothree:umanoPanelHeight="?attr/actionBarSize"
     sothree:umanoShadowHeight="4dp">
 
-    <WebView
-        android:id="@+id/webview"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <WebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_marginTop="-7dp"
+            android:background="@color/transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/webview_progress" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/story_container"

@@ -13,7 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ProgressBar;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -108,6 +112,9 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
 
         WebView webview = (WebView) v.findViewById(R.id.webview);
         webview.loadUrl(getStoryFromArgs().url);
+
+        final ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.webview_progress);
+        webview.setWebChromeClient(new MyChromeClient(progressBar));
 
         return v;
     }
@@ -219,6 +226,37 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         @Override
         public void onPanelHidden(View view) {
 
+        }
+    }
+
+    private static class MyChromeClient extends WebChromeClient {
+        private final WeakReference<ProgressBar> progressRef;
+
+        private MyChromeClient(ProgressBar progressBar) {
+            this.progressRef = new WeakReference<>(progressBar);
+            progressBar.setMax(100);
+        }
+
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            super.onProgressChanged(view, newProgress);
+
+            ProgressBar progressBar = progressRef.get();
+            if (progressBar == null) return;
+
+            progressBar.setProgress(newProgress);
+
+            if (progressBar.getMax() == newProgress) {
+                Animation animation = AnimationUtils.loadAnimation(view.getContext(), android.R.anim.fade_out);
+                animation.setFillEnabled(true);
+                animation.setFillAfter(true);
+                progressBar.startAnimation(animation);
+            } else if (0 == newProgress) {
+                Animation animation = AnimationUtils.loadAnimation(view.getContext(), android.R.anim.fade_in);
+                animation.setFillEnabled(true);
+                animation.setFillAfter(true);
+                progressBar.startAnimation(animation);
+            }
         }
     }
 }
