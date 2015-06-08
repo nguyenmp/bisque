@@ -195,11 +195,24 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
 
         private SlideListener(Toolbar toolbar) {
             this.toolbarRef = new WeakReference<>(toolbar);
+
+            toolbar.removeAllViews();
+            LayoutInflater inflater = LayoutInflater.from(toolbar.getContext());
+            View handle = inflater.inflate(R.layout.story_handle, toolbar, false);
+            toolbar.addView(handle);
         }
 
         @Override
         public void onPanelSlide(View view, float v) {
+            Toolbar toolbar = toolbarRef.get();
+            if (toolbar == null) return;
 
+            View comments = toolbar.findViewById(R.id.story_comments_bar);
+            comments.setVisibility(View.VISIBLE);
+            comments.setAlpha(v);
+            View web = toolbar.findViewById(R.id.story_web_bar);
+            web.setVisibility(View.VISIBLE);
+            web.setAlpha(1 - v);
         }
 
         @Override
@@ -207,10 +220,7 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
             Toolbar toolbar = toolbarRef.get();
             if (toolbar == null) return;
 
-            toolbar.removeAllViews();
-            LayoutInflater inflater = LayoutInflater.from(view.getContext());
-            View content = inflater.inflate(R.layout.web_bar, toolbar, false);
-            toolbar.addView(content);
+            toolbar.findViewById(R.id.story_comments_bar).setVisibility(View.GONE);
         }
 
         @Override
@@ -218,10 +228,7 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
             Toolbar toolbar = toolbarRef.get();
             if (toolbar == null) return;
 
-            toolbar.removeAllViews();
-            LayoutInflater inflater = LayoutInflater.from(view.getContext());
-            View content = inflater.inflate(R.layout.comments, toolbar, false);
-            toolbar.addView(content);
+            toolbar.findViewById(R.id.story_web_bar).setVisibility(View.GONE);
         }
 
         @Override
