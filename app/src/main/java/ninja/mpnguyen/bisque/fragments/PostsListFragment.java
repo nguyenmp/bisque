@@ -1,10 +1,12 @@
 package ninja.mpnguyen.bisque.fragments;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,8 +21,7 @@ import java.util.Observer;
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.databases.MetafyTask;
 import ninja.mpnguyen.bisque.databases.PostHelper;
-import ninja.mpnguyen.bisque.nio.FetcherTask;
-import ninja.mpnguyen.bisque.nio.PostsFetcherTask;
+import ninja.mpnguyen.bisque.loaders.PostsLoaderCallbacks;
 import ninja.mpnguyen.bisque.nio.RefreshingListener;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
 import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
@@ -40,12 +41,38 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
     public PostClickListener listener = null;
 
     // TODO: I really don't like this global state... I should get rid of this
-    private Post[] posts = null;
+    public volatile Post[] posts = null;
 
     public static PostsListFragment newInstance(PostClickListener listener) {
         PostsListFragment f = new PostsListFragment();
         f.setListener(listener);
         return f;
+    }
+
+    public static class PostsLoaderListener extends PostsLoaderCallbacks {
+        private final WeakReference<PostsListFragment> fRef;
+
+        public PostsLoaderListener(Context context, String topic, PostsListFragment f) {
+            super(context, topic);
+            this.fRef = new WeakReference<>(f);
+        }
+
+        @Override
+        public void onRefreshing() {
+
+        }
+
+        @Override
+        public void onResult(Post[] data, boolean fromServer) {
+            PostsListFragment f = fRef.get();
+            if (f == null) return;
+
+            if (fromServer || data != null) {
+                System.out.println("Received from " + (fromServer ? "server" : "cache"));
+                f.posts = data;
+                f.updateMetadata();
+            }
+        }
     }
 
     @Nullable
@@ -74,7 +101,10 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        onRefresh();
+        LoaderManager loaderManager = getLoaderManager();
+        PostsLoaderListener listener = new PostsLoaderListener(view.getContext(), null, this);
+        loaderManager.initLoader(PostsLoaderListener.DISK_CACHED, null, listener);
+        loaderManager.initLoader(PostsLoaderListener.SERVER, null, listener);
     }
 
     @Override
@@ -89,12 +119,10 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         View mainView = getView();
         if (mainView == null) return;
 
-        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) mainView.findViewById(R.id.swipe);
-        RecyclerView recyclerView = (RecyclerView) mainView.findViewById(R.id.content_view);
-
-        if (swipeRefreshLayout == null || recyclerView == null) return;
-
-        new PostsFetcherTask(new PostsListener(), mainView.getContext()).execute();
+        LoaderManager loaderManager = getLoaderManager();
+        PostsLoaderListener listener = new PostsLoaderListener(mainView.getContext(), null, this);
+        loaderManager.restartLoader(PostsLoaderListener.DISK_CACHED, null, listener);
+        loaderManager.restartLoader(PostsLoaderListener.SERVER, null, listener);
     }
 
     public void updateMetadata() {
@@ -105,25 +133,6 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.content_view);
         PostsFetchedListener listener = new PostsFetchedListener(this.listener, swipeRefreshLayout, recyclerView);
         new MetafyTask(getActivity(), posts, listener).execute();
-    }
-
-    private class PostsListener implements FetcherTask.Listener<Post[]> {
-        @Override
-        public void onStart() {
-            // Do nothing
-        }
-
-        @Override
-        public void onSuccess(@NonNull Post[] result) {
-            posts = result;
-            updateMetadata();
-        }
-
-        @Override
-        public void onError() {
-            posts = null;
-            updateMetadata();
-        }
     }
 
     private static class PostsFetchedListener extends RefreshingListener<MetaDataedPost[]> {

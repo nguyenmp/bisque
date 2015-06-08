@@ -45,7 +45,7 @@ public class RefreshingListener<T> implements FetcherTask.Listener<T> {
 
     @Override
     public void onStart() {
-        showLoading();
+//        showLoading();
     }
 
     @Override

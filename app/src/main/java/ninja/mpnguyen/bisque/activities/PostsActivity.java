@@ -23,11 +23,13 @@ public class PostsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction t = fm.beginTransaction();
-        PostsListFragment list = PostsListFragment.newInstance(new PostClickListener(this));
-        t.add(R.id.content_primary, list);
-        t.commit();
+        if (savedInstanceState == null) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction t = fm.beginTransaction();
+            PostsListFragment list = PostsListFragment.newInstance(new PostClickListener(this));
+            t.add(R.id.content_primary, list);
+            t.commit();
+        }
 
         NavigationDrawerFragment f = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);

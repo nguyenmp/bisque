@@ -39,4 +39,5 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'com.j256.ormlite:ormlite-core:4.48'
     compile 'com.sothree.slidinguppanel:library:3.0.0'
+    compile 'com.anupcowkur:reservoir:2.0'
 }
