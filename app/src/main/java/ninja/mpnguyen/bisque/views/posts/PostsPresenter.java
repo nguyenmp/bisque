@@ -1,12 +1,15 @@
 package ninja.mpnguyen.bisque.views.posts;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -25,21 +28,36 @@ public class PostsPresenter {
         return new PostItemViewHolder(postView);
     }
 
-    public static void bindListItem(PostItemViewHolder holder, final MetaDataedPost metaDataedPost) {
+    public static void bindListItem(final PostItemViewHolder holder, final MetaDataedPost metaDataedPost) {
         final PostMetadata metadata = metaDataedPost.metadata;
         final Post post = metaDataedPost.post;
 
         Context context = holder.itemView.getContext();
         Resources resources = context.getResources();
 
+        int oldTitleColor = holder.vh.title.getCurrentTextColor();
         int titleColorRes = metadata.read ? R.color.story_title_read : R.color.story_title_unread;
         int newTitleColor = resources.getColor(titleColorRes);
-        final TextView title = holder.vh.title;
-        title.setTextColor(newTitleColor);
+        ValueAnimator titleColorAnimator = ObjectAnimator.ofInt(holder.vh.title, "textColor", oldTitleColor, newTitleColor);
+        titleColorAnimator.setEvaluator(new ArgbEvaluator());
+        titleColorAnimator.setDuration(resources.getInteger(R.integer.posts_read_animation_duration));
+        titleColorAnimator.start();
 
+        // Animate color of card background
+        int oldCardColor = ((ColorDrawable) holder.vh.container.getBackground()).getColor();
         int cardColorRes = metadata.read ? R.color.background_card_read : R.color.background_card_unread;
         int newCardColor = resources.getColor(cardColorRes);
-        holder.vh.container.setBackgroundColor(newCardColor);
+        ValueAnimator cardColorAnimator = ObjectAnimator.ofInt(holder.vh.container, "backgroundColor", oldCardColor, newCardColor);
+        cardColorAnimator.setEvaluator(new ArgbEvaluator());
+        cardColorAnimator.setDuration(resources.getInteger(R.integer.posts_read_animation_duration));
+        cardColorAnimator.start();
+
+        // Animate card elevation
+        float start = holder.vh.cardView.getElevation();
+        float end = metadata.read ? 4 : 12;
+        ObjectAnimator elevation = ObjectAnimator.ofFloat(holder.vh.cardView, "elevation", start, end);
+        elevation.setDuration(resources.getInteger(R.integer.posts_read_animation_duration));
+        elevation.start();
 
         bindItem(holder.vh, metaDataedPost);
     }
