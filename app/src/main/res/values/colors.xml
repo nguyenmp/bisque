@@ -29,4 +29,8 @@
 
     <color name="story_title_read">@color/medium_gray</color>
     <color name="story_title_unread">@color/dark_gray</color>
+
+    <!-- lobste.rs specific color schemes -->
+    <color name="tag_topic_body">#fffcd7</color>
+    <color name="tag_topic_border">#d5d458</color>
 </resources>

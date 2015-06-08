@@ -6,13 +6,19 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.text.SpannableStringBuilder;
+import android.text.style.DynamicDrawableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.activities.StoryActivity;
@@ -74,7 +80,21 @@ public class PostsPresenter {
         Context context = holder.itemView.getContext();
 
         holder.title.setText(post.title);
-        holder.tags.setText(Arrays.toString(post.tags));
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        String[] tags = post.tags;
+        if (tags != null && tags.length > 0) {
+            builder.append(tags[0]);
+            builder.setSpan(new TopicSpan(context, tags[0]), 0, builder.length(), 0);
+        }
+
+        for (int i = 1; tags != null && i < tags.length; i++) {
+            String tag = tags[i];
+            builder.append(" ").append(tag);
+            int start = builder.length() - tag.length();
+            int end = builder.length();
+            builder.setSpan(new TopicSpan(context, tag), start, end, 0);
+        }
+        holder.tags.setText(builder);
 
         String authorship = context.getString(R.string.by_x, post.submitter_user.username);
         String commentCount = context.getString(R.string.x_comments, post.comment_count);
@@ -115,5 +135,43 @@ public class PostsPresenter {
                 }
             }
         });
+    }
+
+    private static class TopicSpan extends DynamicDrawableSpan {
+        private final Context context;
+        private final String topic;
+        private Rect bounds = new Rect(0, 0, 200, 200);
+
+        public TopicSpan(Context context, String topic) {
+            super();
+            this.context = context;
+            this.topic = topic;
+            new Paint.FontMetrics();
+        }
+
+        @Override
+        public Drawable getDrawable() {
+            Resources resources = context.getResources();
+            Drawable drawable = resources.getDrawable(R.drawable.tag_topic, context.getTheme());
+            drawable.setBounds(bounds);
+            return drawable;
+        }
+
+        @Override
+        public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+            paint.getTextBounds(text.toString(), start, end, bounds);
+            bounds.bottom = -1;
+            bounds.top = -64;
+            return super.getSize(paint, text, start, end, fm);
+        }
+
+        @Override
+        public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
+            paint.getTextBounds(text.toString(), start, end, bounds);
+            bounds.bottom = -1;
+            bounds.top = -64;
+            super.draw(canvas, text, start, end, x, top, y, bottom, paint);
+            canvas.drawText(text, start, end, x, y, paint);
+        }
     }
 }
