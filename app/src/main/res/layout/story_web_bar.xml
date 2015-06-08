@@ -7,37 +7,37 @@
 
     <ImageView
         style="@style/StoryActionButton"
-        android:contentDescription="@string/mark_as_read"
+        android:contentDescription="@string/go_back"
         android:layout_weight="1"
-        android:id="@+id/post_action_read"
+        android:id="@+id/webview_action_back"
         android:src="@drawable/ic_navigation_arrow_back_white" />
 
     <ImageView
         style="@style/StoryActionButton"
         android:contentDescription="@string/author"
         android:layout_weight="1"
-        android:id="@+id/post_action_author"
+        android:id="@+id/webview_action_forward"
         android:src="@drawable/ic_navigation_arrow_forward_white" />
 
     <ImageView
         style="@style/StoryActionButton"
-        android:contentDescription="@string/delete"
+        android:contentDescription="@string/share"
         android:layout_weight="1"
-        android:id="@+id/post_action_delete"
+        android:id="@+id/webview_action_share"
         android:src="@drawable/ic_social_share_white" />
 
     <ImageView
         style="@style/StoryActionButton"
-        android:contentDescription="@string/comments"
+        android:contentDescription="@string/open_in_browser"
         android:layout_weight="1"
-        android:id="@+id/post_action_comments"
+        android:id="@+id/webview_action_browser"
         android:src="@drawable/ic_social_public_white" />
 
     <ImageView
         style="@style/StoryActionButton"
         android:contentDescription="@string/comments"
         android:layout_weight="1"
-        android:id="@+id/post_action_comments"
+        android:id="@+id/webview_action_comments"
         android:src="@drawable/ic_editor_mode_comment_white" />
 
 </LinearLayout>

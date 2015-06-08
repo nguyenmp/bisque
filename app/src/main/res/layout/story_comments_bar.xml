@@ -7,23 +7,23 @@
 
     <ImageView
         style="@style/StoryActionButton"
-        android:contentDescription="@string/mark_as_read"
+        android:contentDescription="@string/share"
         android:layout_weight="1"
-        android:id="@+id/post_action_share"
+        android:id="@+id/comments_action_share"
         android:src="@drawable/ic_social_share_white" />
 
     <ImageView
         style="@style/StoryActionButton"
-        android:contentDescription="@string/mark_as_read"
+        android:contentDescription="@string/open_in_browser"
         android:layout_weight="1"
-        android:id="@+id/post_action_open"
+        android:id="@+id/comments_action_open"
         android:src="@drawable/ic_social_public_white" />
 
     <ImageView
         style="@style/StoryActionButton"
-        android:contentDescription="@string/comments"
+        android:contentDescription="@string/link"
         android:layout_weight="1"
-        android:id="@+id/post_action_link"
+        android:id="@+id/comments_action_link"
         android:src="@drawable/ic_content_link_white" />
 
 </LinearLayout>

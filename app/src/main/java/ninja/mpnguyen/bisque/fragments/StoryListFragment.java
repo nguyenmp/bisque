@@ -1,5 +1,7 @@
 package ninja.mpnguyen.bisque.fragments;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.view.animation.AnimationUtils;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -105,8 +108,9 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
+        Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
         SlidingUpPanelLayout slider = (SlidingUpPanelLayout) v.findViewById(R.id.slidinglayout);
-        slider.setPanelSlideListener(new SlideListener((Toolbar) v.findViewById(R.id.toolbar)));
+        slider.setPanelSlideListener(new SlideListener(toolbar));
 
         Story storyFromIntent = getStoryFromArgs();
         recyclerView.swapAdapter(new StoryAdapter(storyFromIntent, true), false);
@@ -121,6 +125,15 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
 
         final ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.webview_progress);
         webview.setWebChromeClient(new MyChromeClient(progressBar));
+        webview.setWebViewClient(new WebViewClient());
+
+        toolbar.removeAllViews();
+        View handle = inflater.inflate(R.layout.story_handle, toolbar, false);
+        toolbar.addView(handle);
+        View webbar = handle.findViewById(R.id.story_web_bar);
+        bindWebController(webbar, new WebControllerListener(webview));
+        View commentsbar = handle.findViewById(R.id.story_comments_bar);
+        bindComments(commentsbar, new CommentsControllerListener(getStoryFromArgs().comments_url, inflater.getContext()));
 
         return v;
     }
@@ -190,16 +203,142 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         }
     }
 
+    private static void bindWebController(View web_bar, final WebControllerListener listener) {
+        web_bar.findViewById(R.id.webview_action_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onBackward();
+            }
+        });
+        web_bar.findViewById(R.id.webview_action_forward).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onForward();
+            }
+        });
+        web_bar.findViewById(R.id.webview_action_browser).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onBrowser();
+            }
+        });
+        web_bar.findViewById(R.id.webview_action_share).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onShare();
+            }
+        });
+        web_bar.findViewById(R.id.webview_action_comments).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onComments();
+            }
+        });
+    }
+
+    private static class WebControllerListener {
+        private final WeakReference<WebView> webviewRef;
+
+        WebControllerListener(WebView webview) {
+            this.webviewRef = new WeakReference<WebView>(webview);
+        }
+
+        public void onBackward() {
+            WebView webview = webviewRef.get();
+            if (webview == null) return;
+
+            webview.goBack();
+        }
+        public void onForward() {
+            WebView webview = webviewRef.get();
+            if (webview == null) return;
+
+            webview.goForward();
+        }
+        public void onBrowser() {
+            WebView webview = webviewRef.get();
+            if (webview == null) return;
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(webview.getUrl()));
+            Context context = webview.getContext();
+            context.startActivity(intent);
+        }
+        public void onShare() {
+            WebView webview = webviewRef.get();
+            if (webview == null) return;
+
+            String url = webview.getUrl();
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_TEXT, url);
+            Context context = webview.getContext();
+            context.startActivity(intent);
+        }
+        public void onComments() {
+            // TODO: Implement this toggle
+        }
+    }
+
+    public void bindComments(View comment_bar, final CommentsControllerListener listener) {
+        comment_bar.findViewById(R.id.comments_action_link).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onLink();
+            }
+        });
+        comment_bar.findViewById(R.id.comments_action_open).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onBrowser();
+            }
+        });
+        comment_bar.findViewById(R.id.comments_action_share).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onShare();
+            }
+        });
+    }
+
+    private static class CommentsControllerListener {
+        private final String url;
+        private final WeakReference<Context> contextRef;
+
+        private CommentsControllerListener(String url, Context context) {
+            this.url = url;
+            this.contextRef = new WeakReference<>(context);
+        }
+
+        public void onBrowser() {
+            Context context = contextRef.get();
+            if (context == null) return;
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            context.startActivity(intent);
+        }
+
+        public void onShare() {
+            Context context = contextRef.get();
+            if (context == null) return;
+
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_TEXT, url);
+            intent.setType("text/plain");
+            context.startActivity(intent);
+        }
+
+        public void onLink() {
+            // TODO: Implement this toggle
+        }
+    }
+
     private static class SlideListener implements SlidingUpPanelLayout.PanelSlideListener {
         private final WeakReference<Toolbar> toolbarRef;
 
         private SlideListener(Toolbar toolbar) {
             this.toolbarRef = new WeakReference<>(toolbar);
-
-            toolbar.removeAllViews();
-            LayoutInflater inflater = LayoutInflater.from(toolbar.getContext());
-            View handle = inflater.inflate(R.layout.story_handle, toolbar, false);
-            toolbar.addView(handle);
         }
 
         @Override
