@@ -29,13 +29,17 @@ public class PostsPresenter {
         final PostMetadata metadata = metaDataedPost.metadata;
         final Post post = metaDataedPost.post;
 
-        int titleColorRes = metadata.read ? R.color.story_title_read : R.color.story_title_unread;
         Context context = holder.itemView.getContext();
         Resources resources = context.getResources();
+
+        int titleColorRes = metadata.read ? R.color.story_title_read : R.color.story_title_unread;
         int newTitleColor = resources.getColor(titleColorRes);
         final TextView title = holder.vh.title;
-        int originalTitleColor = title.getCurrentTextColor();
         title.setTextColor(newTitleColor);
+
+        int cardColorRes = metadata.read ? R.color.background_card_read : R.color.background_card_unread;
+        int newCardColor = resources.getColor(cardColorRes);
+        holder.vh.container.setBackgroundColor(newCardColor);
 
         bindItem(holder.vh, metaDataedPost);
     }

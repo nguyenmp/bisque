@@ -12,9 +12,11 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public final CardView cardView;
     public final TextView title, tags, subheading;
     public final ImageView action_comment, action_delete, action_toggle_read, action_author;
+    public final View container;
 
     public PostViewHolder(View itemView) {
         super(itemView);
+        this.container = itemView.findViewById(R.id.post_container);
         this.cardView = (CardView) itemView.findViewById(R.id.card_view);
         this.title = (TextView) itemView.findViewById(R.id.post_title);
         this.tags = (TextView) itemView.findViewById(R.id.post_tags);

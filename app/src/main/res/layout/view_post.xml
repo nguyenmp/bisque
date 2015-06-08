@@ -2,7 +2,8 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:background="@color/background_card_white"
+    android:id="@+id/post_container"
+    android:background="@color/background_card_read"
     android:paddingTop="16dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
