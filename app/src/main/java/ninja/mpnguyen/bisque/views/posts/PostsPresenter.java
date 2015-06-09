@@ -6,18 +6,18 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.SpannableStringBuilder;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.sql.SQLException;
-import java.util.Arrays;
-
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.activities.StoryActivity;
 import ninja.mpnguyen.bisque.activities.UserActivity;
-import ninja.mpnguyen.bisque.databases.PostHelper;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
 import ninja.mpnguyen.bisque.things.PostMetadata;
 import ninja.mpnguyen.chowders.things.json.Post;
@@ -72,14 +72,33 @@ public class PostsPresenter {
         final Post post = metaDataedPost.post;
 
         Context context = holder.itemView.getContext();
+        Resources r = context.getResources();
 
         holder.title.setText(post.title);
-        holder.tags.setText(Arrays.toString(post.tags));
+        SpannableStringBuilder tagsBuilder = new SpannableStringBuilder();
+        BackgroundColorSpan tagSpan = new BackgroundColorSpan(r.getColor(R.color.transparent));
+        if (post.tags != null && post.tags.length > 0) {
+            tagsBuilder.append(post.tags[0]);
+            tagsBuilder.setSpan(tagSpan, 0, tagsBuilder.length(), 0);
+        }
+        for (int i = 1; post.tags != null && i < post.tags.length; i++) {
+            tagsBuilder.append(" ").append(post.tags[i]);
+            tagsBuilder.setSpan(tagSpan, tagsBuilder.length() - post.tags[i].length(), tagsBuilder.length(), 0);
+        }
+        holder.tags.setText(tagsBuilder);
 
         String authorship = context.getString(R.string.by_x, post.submitter_user.username);
         String commentCount = context.getString(R.string.x_comments, post.comment_count);
         String subheading = String.format("%s with %s", authorship, commentCount);
-        holder.subheading.setText(subheading);
+        SpannableStringBuilder builder = new SpannableStringBuilder(subheading);
+        int newComments = post.comment_count - metadata.last_read_comment_count;
+        if (newComments > 0 && metadata.read) {
+            int start = builder.length();
+            builder.append(" ").append(context.getString(R.string.new_comments, newComments));
+            int end = builder.length();
+            builder.setSpan(new ForegroundColorSpan(Color.RED), start, end, 0);
+        }
+        holder.subheading.setText(builder);
 
         int toggleReadResource = metadata.read ? R.drawable.ic_action_visibility_off_gray : R.drawable.ic_action_visibility_gray;
         holder.action_toggle_read.setImageResource(toggleReadResource);
@@ -107,12 +126,7 @@ public class PostsPresenter {
         holder.action_toggle_read.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                metadata.read = !metadata.read;
-                try {
-                    PostHelper.setMetadata(metadata, v.getContext());
-                } catch (SQLException ignored) {
-                    ignored.printStackTrace();
-                }
+                MetaDataedPost.markAsRead(!metadata.read, metaDataedPost, v.getContext());
             }
         });
     }

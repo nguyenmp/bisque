@@ -18,6 +18,9 @@ public class PostMetadata implements Serializable {
     public String short_id;
 
     @DatabaseField
+    public int last_read_comment_count;
+
+    @DatabaseField
     public boolean hidden;
 
     @DatabaseField
@@ -30,6 +33,7 @@ public class PostMetadata implements Serializable {
     public PostMetadata(PostMetadata post) {
         this.id = post.id;
         this.short_id = post.short_id;
+        this.last_read_comment_count = post.last_read_comment_count;
         this.hidden = post.hidden;
         this.read = post.read;
     }

@@ -31,8 +31,7 @@ public class StoryActivity extends AppCompatActivity {
 
         try {
             MetaDataedPost metadata = PostHelper.getMetadata(post, context);
-            metadata.metadata.read = true;
-            PostHelper.setMetadata(metadata.metadata, context);
+            MetaDataedPost.markAsRead(metadata, context);
         } catch (SQLException ignored) {
         }
     }
