@@ -69,7 +69,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
 
             if (fromServer || data != null) {
                 f.posts = data;
-                f.updateMetadata();
+                f.updateMetadata(fromServer);
             }
         }
     }
@@ -124,11 +124,11 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         loaderManager.restartLoader(PostsLoaderListener.SERVER, null, listener);
     }
 
-    public void updateMetadata() {
+    public void updateMetadata(boolean andResetRefresher) {
         View view = getView();
         if (view == null) return;
 
-        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe);
+        SwipeRefreshLayout swipeRefreshLayout = andResetRefresher ? (SwipeRefreshLayout) view.findViewById(R.id.swipe) : null;
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.content_view);
         PostsFetchedListener listener = new PostsFetchedListener(this.listener, swipeRefreshLayout, recyclerView);
         new MetafyTask(getActivity(), posts, listener).execute();
@@ -184,7 +184,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
             if (f == null) {
                 observable.deleteObserver(this);
             } else {
-                f.updateMetadata();
+                f.updateMetadata(false);
             }
         }
     }
