@@ -17,7 +17,7 @@ public class PostsFromServerLoader extends GenericLoader<Post[]> {
     public Post[] loadInBackground() {
         try {
             Post[] posts = FrontPage.get(FrontPage.Sort.Hottest);
-            new PostsCashier().putIntoCache(posts);
+            if (posts != null) new PostsCashier().putIntoCache(posts);
             return posts;
         } catch (IOException e) {
             e.printStackTrace();
