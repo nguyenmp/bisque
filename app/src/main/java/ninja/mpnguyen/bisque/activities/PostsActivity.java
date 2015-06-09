@@ -28,6 +28,10 @@ public class PostsActivity extends AppCompatActivity
             PostsListFragment list = PostsListFragment.newInstance(new PostClickListener(this));
             t.add(R.id.content_primary, list);
             t.commit();
+        } else {
+            FragmentManager fm = getSupportFragmentManager();
+            PostsListFragment f = (PostsListFragment) fm.findFragmentById(R.id.content_primary);
+            f.setListener(new PostClickListener(this));
         }
 
         NavigationDrawerFragment f = (NavigationDrawerFragment)
