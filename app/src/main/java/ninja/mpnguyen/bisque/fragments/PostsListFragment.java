@@ -68,7 +68,6 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
             if (f == null) return;
 
             if (fromServer || data != null) {
-                System.out.println("Received from " + (fromServer ? "server" : "cache"));
                 f.posts = data;
                 f.updateMetadata();
             }
