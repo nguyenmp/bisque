@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.MenuItem;
 
 import java.lang.ref.WeakReference;
 
@@ -14,8 +16,20 @@ import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.fragments.PostsListFragment;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
 
-public class PostsActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class PostsActivity extends AppCompatActivity {
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            DrawerLayout d = (DrawerLayout) findViewById(R.id.drawer_layout);
+            if (d.isDrawerOpen(Gravity.START)) {
+                d.closeDrawer(Gravity.START);
+            } else {
+                d.openDrawer(Gravity.START);
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +58,8 @@ public class PostsActivity extends AppCompatActivity
         toolbar.setNavigationIcon(R.drawable.ic_navigation_menu_white);
         setSupportActionBar(toolbar);
 
-        f.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        f.setUp(R.id.navigation_drawer, drawer);
     }
 
     public void showPost(MetaDataedPost post) {
@@ -63,9 +78,5 @@ public class PostsActivity extends AppCompatActivity
             PostsActivity postsActivity = activityRef.get();
             postsActivity.showPost(post);
         }
-    }
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        // Do nothing
     }
 }
