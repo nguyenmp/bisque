@@ -3,10 +3,10 @@ package ninja.mpnguyen.bisque.activities;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.MenuItem;
 
 import java.lang.ref.WeakReference;
@@ -22,10 +22,10 @@ public class PostsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             DrawerLayout d = (DrawerLayout) findViewById(R.id.drawer_layout);
-            if (d.isDrawerOpen(Gravity.START)) {
-                d.closeDrawer(Gravity.START);
+            if (d.isDrawerOpen(GravityCompat.START)) {
+                d.closeDrawer(GravityCompat.START);
             } else {
-                d.openDrawer(Gravity.START);
+                d.openDrawer(GravityCompat.START);
             }
         }
         return super.onOptionsItemSelected(item);
