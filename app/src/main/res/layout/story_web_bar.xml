@@ -31,7 +31,7 @@
         android:contentDescription="@string/open_in_browser"
         android:layout_weight="1"
         android:id="@+id/webview_action_browser"
-        android:src="@drawable/ic_social_public_white" />
+        android:src="@drawable/ic_action_open_in_browser_white" />
 
     <ImageView
         style="@style/StoryActionButton"
