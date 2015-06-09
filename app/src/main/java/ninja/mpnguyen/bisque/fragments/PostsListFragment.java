@@ -107,6 +107,13 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        onRefresh();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
