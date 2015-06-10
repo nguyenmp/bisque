@@ -100,6 +100,7 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         return f;
     }
 
+    private WebView webview;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -123,7 +124,7 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         Story storyFromIntent = getStoryFromArgs();
         recyclerView.swapAdapter(new StoryAdapter(storyFromIntent, true), false);
 
-        WebView webview = (WebView) v.findViewById(R.id.webview);
+        webview = (WebView) v.findViewById(R.id.webview);
         WebSettings settings = webview.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setBuiltInZoomControls(true);
@@ -162,6 +163,12 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         }, 300);
 
         onRefresh();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (webview != null) webview.destroy();
     }
 
     private Story getStoryFromArgs() {

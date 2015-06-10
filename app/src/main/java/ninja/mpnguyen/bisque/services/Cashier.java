@@ -9,7 +9,7 @@ public abstract class Cashier<T> {
     }
 
     public void putIntoCache(T t) throws Exception {
-        Reservoir.put(getKey(), t);
+        if (t != null) Reservoir.put(getKey(), t);
     }
 
     public abstract String getKey();

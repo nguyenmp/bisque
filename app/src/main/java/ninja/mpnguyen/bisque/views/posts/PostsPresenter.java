@@ -32,34 +32,54 @@ public class PostsPresenter {
         final PostMetadata metadata = metaDataedPost.metadata;
         final Post post = metaDataedPost.post;
 
+        boolean animate = post.short_id.equals(holder.vh.short_id);
+
         Context context = holder.itemView.getContext();
         Resources resources = context.getResources();
 
-        int oldTitleColor = holder.vh.title.getCurrentTextColor();
-        int titleColorRes = metadata.read ? R.color.story_title_read : R.color.story_title_unread;
-        int newTitleColor = resources.getColor(titleColorRes);
-        ValueAnimator titleColorAnimator = ObjectAnimator.ofInt(holder.vh.title, "textColor", oldTitleColor, newTitleColor);
-        titleColorAnimator.setEvaluator(new ArgbEvaluator());
-        titleColorAnimator.setDuration(resources.getInteger(R.integer.posts_read_animation_duration));
-        titleColorAnimator.start();
+        if (animate) {
+            int oldTitleColor = holder.vh.title.getCurrentTextColor();
+            int titleColorRes = metadata.read ? R.color.story_title_read : R.color.story_title_unread;
+            int newTitleColor = resources.getColor(titleColorRes);
+            ValueAnimator titleColorAnimator = ObjectAnimator.ofInt(holder.vh.title, "textColor", oldTitleColor, newTitleColor);
+            titleColorAnimator.setEvaluator(new ArgbEvaluator());
+            titleColorAnimator.setDuration(resources.getInteger(R.integer.posts_read_animation_duration));
+            titleColorAnimator.start();
+        } else {
+            int titleColorRes = metadata.read ? R.color.story_title_read : R.color.story_title_unread;
+            int newTitleColor = resources.getColor(titleColorRes);
+            holder.vh.title.setTextColor(newTitleColor);
+        }
 
-        // Animate color of card background
-        int oldCardColor = ((ColorDrawable) holder.vh.container.getBackground()).getColor();
-        int cardColorRes = metadata.read ? R.color.background_card_read : R.color.background_card_unread;
-        int newCardColor = resources.getColor(cardColorRes);
-        ValueAnimator cardColorAnimator = ObjectAnimator.ofInt(holder.vh.container, "backgroundColor", oldCardColor, newCardColor);
-        cardColorAnimator.setEvaluator(new ArgbEvaluator());
-        cardColorAnimator.setDuration(resources.getInteger(R.integer.posts_read_animation_duration));
-        cardColorAnimator.start();
+        if (animate) {
+            // Animate color of card background
+            int oldCardColor = ((ColorDrawable) holder.vh.container.getBackground()).getColor();
+            int cardColorRes = metadata.read ? R.color.background_card_read : R.color.background_card_unread;
+            int newCardColor = resources.getColor(cardColorRes);
+            ValueAnimator cardColorAnimator = ObjectAnimator.ofInt(holder.vh.container, "backgroundColor", oldCardColor, newCardColor);
+            cardColorAnimator.setEvaluator(new ArgbEvaluator());
+            cardColorAnimator.setDuration(resources.getInteger(R.integer.posts_read_animation_duration));
+            cardColorAnimator.start();
+        } else {
+            int cardColorRes = metadata.read ? R.color.background_card_read : R.color.background_card_unread;
+            int newCardColor = resources.getColor(cardColorRes);
+            holder.vh.container.setBackgroundColor(newCardColor);
+        }
 
-        // Animate card elevation
-        float start = holder.vh.cardView.getElevation();
-        float end = metadata.read ? 4 : 12;
-        ObjectAnimator elevation = ObjectAnimator.ofFloat(holder.vh.cardView, "elevation", start, end);
-        elevation.setDuration(resources.getInteger(R.integer.posts_read_animation_duration));
-        elevation.start();
+        if (animate) {
+            // Animate card elevation
+            float start = holder.vh.cardView.getElevation();
+            float end = metadata.read ? 4 : 12;
+            ObjectAnimator elevation = ObjectAnimator.ofFloat(holder.vh.cardView, "elevation", start, end);
+            elevation.setDuration(resources.getInteger(R.integer.posts_read_animation_duration));
+            elevation.start();
+        } else {
+            float end = metadata.read ? 4 : 12;
+            holder.vh.cardView.setElevation(end);
+        }
 
         bindItem(holder.vh, metaDataedPost);
+        holder.vh.short_id = metadata.short_id;
     }
 
     public static PostViewHolder inflateItem(LayoutInflater inflater, ViewGroup viewGroup) {

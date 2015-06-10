@@ -9,6 +9,8 @@ import android.widget.TextView;
 import ninja.mpnguyen.bisque.R;
 
 public class PostViewHolder extends RecyclerView.ViewHolder {
+    public String short_id;
+
     public final CardView cardView;
     public final TextView title, tags, subheading;
     public final ImageView action_comment, action_delete, action_toggle_read, action_author;
