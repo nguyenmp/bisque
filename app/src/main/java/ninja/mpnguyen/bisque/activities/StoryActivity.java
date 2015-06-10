@@ -13,7 +13,7 @@ import java.util.List;
 
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.databases.PostHelper;
-import ninja.mpnguyen.bisque.fragments.StoryListFragment;
+import ninja.mpnguyen.bisque.fragments.story.StoryListFragment;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
 import ninja.mpnguyen.chowders.things.json.Post;
 import ninja.mpnguyen.chowders.things.json.Story;
