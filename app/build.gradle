@@ -51,4 +51,5 @@ dependencies {
     compile 'com.sothree.slidinguppanel:library:3.0.0'
     compile 'com.anupcowkur:reservoir:2.0'
     compile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
+    compile 'com.google.android.gms:play-services-analytics:7.5.0'
 }
