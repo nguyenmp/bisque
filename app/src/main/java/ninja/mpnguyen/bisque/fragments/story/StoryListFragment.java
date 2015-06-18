@@ -109,16 +109,30 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         return v;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (webview != null) webview.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (webview != null) webview.onResume();
+    }
+
     private static void initSliderController(View v, LayoutInflater inflater, Story story) {
         Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
+        WebView webview = (WebView) v.findViewById(R.id.webview);
         SlidingUpPanelLayout slidr = (SlidingUpPanelLayout) v.findViewById(R.id.slidinglayout);
-        slidr.setPanelSlideListener(new SlideListener(toolbar));
+        slidr.setPanelSlideListener(new SlideListener(webview, toolbar));
 
         toolbar.removeAllViews();
         View handle = inflater.inflate(R.layout.story_handle, toolbar, false);
         toolbar.addView(handle);
         View webbar = handle.findViewById(R.id.story_web_bar);
-        WebView webview = (WebView) v.findViewById(R.id.webview);
         WebBarListener.bindWebController(webbar, new WebBarListener(webview, slidr));
         View commentsbar = handle.findViewById(R.id.story_comments_bar);
         CommentsBarListener.bindComments(commentsbar, new CommentsBarListener(story.comments_url, inflater.getContext(), slidr));
