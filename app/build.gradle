@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+import org.ajoberstar.grgit.*
+ext.repo = Grgit.open(project.file('..'))
+def dirty_suffix = repo.status().clean ? "" : "-dirty"
+def git_version = "${repo.head().abbreviatedId}-${repo.branch.getCurrent().getName()}${dirty_suffix}"
+
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
@@ -12,9 +17,14 @@ android {
         versionName "0.0.0"
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            versionNameSuffix "-debug-${git_version}"
+        }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            versionNameSuffix "-release-${git_version}"
         }
     }
     dexOptions {
