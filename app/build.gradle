@@ -22,7 +22,7 @@ android {
             versionNameSuffix "-debug-${git_version}"
         }
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             versionNameSuffix "-release-${git_version}"
         }
