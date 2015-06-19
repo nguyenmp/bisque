@@ -2,6 +2,8 @@ package ninja.mpnguyen.bisque.views.comments;
 
 import android.text.Editable;
 import android.text.Html;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.TypefaceSpan;
 import android.view.LayoutInflater;
@@ -24,23 +26,70 @@ public class CommentPresenter {
     }
 
     public static void bindListItem(CommentViewHolder holder, Comment comment) {
-        String comment1 = comment.comment;
-        Document dom = Jsoup.parse(comment1);
-        Elements codes = dom.select("code");
+        Spanned spanned = processCommentText(comment);
+        holder.comment_text.setText(spanned);
+        holder.comment_author.setText(comment.commenting_user.username);
+
+        ViewGroup.LayoutParams layoutParams = holder.padding.getLayoutParams();
+        layoutParams.width = (comment.indent_level - 1) * 40;
+        holder.padding.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * Converts html text into an spanned string that handles trailing whitespace
+     * and code segments more appropirately than {@link Html#fromHtml(String)}
+     **/
+    private static Spanned processCommentText(Comment comment) {
+        String commentText = comment.comment.trim();
+
+        // Handle code segments of the text.
+        // This means preserve whitespace and typeset in monospace
+        Document doc = preserveWhitespaceForCode(commentText);
+        Spanned spanned = Html.fromHtml(doc.body().html(), null, new MonospaceForCodeHandler());
+
+        // If we have trailing newlines in this processed spanned, then remove them.
+        // There should at most ever be two.  This happens when we terminate the
+        // comment with some div or paragraph and looks unsightly.
+        if (spanned instanceof SpannableStringBuilder) {
+            SpannableStringBuilder builder = (SpannableStringBuilder) spanned;
+            int len = builder.length();
+            if (len > 0 && builder.charAt(len - 1) == '\n') {
+                if (len > 1 && builder.charAt(len - 2) == '\n') {
+                    builder = builder.delete(len - 2, len);
+                } else {
+                    builder = builder.delete(len - 1, len);
+                }
+            }
+
+            spanned = builder;
+        }
+
+        return spanned;
+    }
+
+
+    /**
+     * Preprocess code segments.  In code segments, replace all
+     * newlines with line breaks and spaces with non-breaking spaces
+     * This will help preserve whitespace when viewing code blocks
+     * Our custom tag handler will handle applying a monospace
+     * font to the text
+     */
+    private static Document preserveWhitespaceForCode(String commentText) {
+        Document doc = Jsoup.parse(commentText);
+        Elements codes = doc.select("code");
         for (Element e : codes) {
             String encoded = TextUtils.htmlEncode(e.text().replaceAll(" ", "\u00A0"));
             encoded = encoded.replaceAll("\n", "<br>");
             e.html(encoded);
         }
-        holder.comment_text.setText(Html.fromHtml(dom.body().html(), null, new CodeHandler()));
-        holder.comment_author.setText(comment.commenting_user.username);
-
-        ViewGroup.LayoutParams layoutParams = holder.padding.getLayoutParams();
-        layoutParams.width = comment.indent_level * 40;
-        holder.padding.setLayoutParams(layoutParams);
+        return doc;
     }
 
-    private static class CodeHandler implements Html.TagHandler {
+    /**
+     * Typesets code segments in monospace font
+     */
+    private static class MonospaceForCodeHandler implements Html.TagHandler {
         private Integer start;
         @Override
         public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
