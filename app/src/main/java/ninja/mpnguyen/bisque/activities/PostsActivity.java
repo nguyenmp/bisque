@@ -39,13 +39,9 @@ public class PostsActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction t = fm.beginTransaction();
-            PostsListFragment list = PostsListFragment.newInstance(new PostClickListener(this));
+            PostsListFragment list = PostsListFragment.newInstance();
             t.add(R.id.content_primary, list);
             t.commit();
-        } else {
-            FragmentManager fm = getSupportFragmentManager();
-            PostsListFragment f = (PostsListFragment) fm.findFragmentById(R.id.content_primary);
-            f.setClickListener(new PostClickListener(this));
         }
 
         NavigationDrawerFragment f = (NavigationDrawerFragment)
@@ -60,23 +56,5 @@ public class PostsActivity extends AppCompatActivity {
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         f.setUp(R.id.navigation_drawer, drawer);
-    }
-
-    public void showPost(MetaDataedPost post) {
-        StoryActivity.showPost(this, post.post, false);
-    }
-
-    private static class PostClickListener implements PostsListFragment.PostClickListener {
-        private final WeakReference<PostsActivity> activityRef;
-
-        private PostClickListener(PostsActivity activity) {
-            this.activityRef = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void onPostClicked(MetaDataedPost post) {
-            PostsActivity postsActivity = activityRef.get();
-            postsActivity.showPost(post);
-        }
     }
 }

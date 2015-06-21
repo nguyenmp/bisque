@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.bisque.fragments.PostsListFragment;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
 import ninja.mpnguyen.bisque.views.errors.ErrorPresenter;
 import ninja.mpnguyen.bisque.views.errors.ErrorViewHolder;
@@ -16,13 +15,21 @@ import ninja.mpnguyen.bisque.views.progress.ProgressPresenter;
 import ninja.mpnguyen.bisque.views.progress.ProgressViewHolder;
 
 public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public interface PostClickListener {
+        void onPostClicked(MetaDataedPost post);
+    }
+
+    public interface PostHideListener {
+        void onPostHidden(MetaDataedPost post);
+    }
+
     private final int TYPE_POST = 0, TYPE_ERROR = 1, TYPE_EMPTY = 2, TYPE_LOADING = 3;
     private final MetaDataedPost[] posts;
     private final boolean loading;
-    private final PostsListFragment.PostClickListener clickListener;
-    private final PostsListFragment.PostHideListener hideListener;
+    private final PostClickListener clickListener;
+    private final PostHideListener hideListener;
 
-    public PostsAdapter(@Nullable MetaDataedPost[] posts, boolean loading, PostsListFragment.PostClickListener clickListener, PostsListFragment.PostHideListener hideListener) {
+    public PostsAdapter(@Nullable MetaDataedPost[] posts, boolean loading, PostClickListener clickListener, PostHideListener hideListener) {
         this.posts = posts;
         this.loading = loading;
         this.clickListener = clickListener;
@@ -89,10 +96,10 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     private static class PostHideClickListener implements View.OnClickListener {
-        private final PostsListFragment.PostHideListener listener;
+        private final PostHideListener listener;
         private final MetaDataedPost post;
 
-        private PostHideClickListener(PostsListFragment.PostHideListener listener, MetaDataedPost post) {
+        private PostHideClickListener(PostHideListener listener, MetaDataedPost post) {
             this.listener = listener;
             this.post = post;
         }
@@ -105,9 +112,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private static class PostItemClickListener implements View.OnClickListener {
         private final MetaDataedPost post;
-        private final PostsListFragment.PostClickListener listener;
+        private final PostClickListener listener;
 
-        private PostItemClickListener(MetaDataedPost post, PostsListFragment.PostClickListener listener) {
+        private PostItemClickListener(MetaDataedPost post, PostClickListener listener) {
             this.post = post;
             this.listener = listener;
         }

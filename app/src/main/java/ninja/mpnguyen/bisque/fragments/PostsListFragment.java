@@ -22,6 +22,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import ninja.mpnguyen.bisque.R;
+import ninja.mpnguyen.bisque.activities.StoryActivity;
 import ninja.mpnguyen.bisque.databases.MetafyTask;
 import ninja.mpnguyen.bisque.databases.PostHelper;
 import ninja.mpnguyen.bisque.loaders.PostsLoaderCallbacks;
@@ -32,29 +33,13 @@ import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
 import ninja.mpnguyen.chowders.things.json.Post;
 
 public class PostsListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    public interface PostClickListener {
-        void onPostClicked(MetaDataedPost post);
-    }
-
-    public interface PostHideListener {
-        void onPostHidden(MetaDataedPost post);
-    }
-
     private final Observer postsObserver = new PostsObserver(this);
-
-    public void setClickListener(PostClickListener clickListener) {
-        this.clickListener = clickListener;
-    }
-
-    public PostClickListener clickListener = null;
 
     // TODO: I really don't like this global state... I should get rid of this
     public volatile Post[] posts = null;
 
-    public static PostsListFragment newInstance(PostClickListener clickListener) {
-        PostsListFragment f = new PostsListFragment();
-        f.setClickListener(clickListener);
-        return f;
+    public static PostsListFragment newInstance() {
+        return new PostsListFragment();
     }
 
     public static class PostsLoaderListener extends PostsLoaderCallbacks {
@@ -99,7 +84,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        recyclerView.swapAdapter(new PostsAdapter(null, true, clickListener, new HideListener(this)), false);
+        recyclerView.swapAdapter(new PostsAdapter(null, true, new PostClickListener(this), new HideListener(this)), false);
 
         return result;
     }
@@ -145,16 +130,16 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
 
         SwipeRefreshLayout swipeRefreshLayout = andResetRefresher ? (SwipeRefreshLayout) view.findViewById(R.id.swipe) : null;
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.content_view);
-        PostsFetchedListener listener = new PostsFetchedListener(this.clickListener, new HideListener(this), swipeRefreshLayout, recyclerView);
+        PostsFetchedListener listener = new PostsFetchedListener(new PostClickListener(this), new HideListener(this), swipeRefreshLayout, recyclerView);
         new MetafyTask(getActivity(), posts, listener, false).execute();
     }
 
     private static class PostsFetchedListener extends RefreshingListener<MetaDataedPost[]> {
         private final PostClickListener clickListener;
-        private final PostHideListener hideListener;
+        private final PostsAdapter.PostHideListener hideListener;
         private final WeakReference<RecyclerView> recyclerRef;
 
-        private PostsFetchedListener(PostClickListener clickListener, PostHideListener hideListener, @Nullable SwipeRefreshLayout refreshLayout, @Nullable RecyclerView content) {
+        private PostsFetchedListener(PostClickListener clickListener, PostsAdapter.PostHideListener hideListener, @Nullable SwipeRefreshLayout refreshLayout, @Nullable RecyclerView content) {
             super(refreshLayout);
             this.recyclerRef = new WeakReference<>(content);
             this.clickListener = clickListener;
@@ -178,6 +163,10 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
 
             recycler.swapAdapter(new PostsAdapter(null, false, clickListener, hideListener), false);
         }
+    }
+
+    public void showPost(Context context, MetaDataedPost post) {
+        StoryActivity.showPost(context, post.post, false);
     }
 
     /**
@@ -206,7 +195,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         }
     }
 
-    public static class HideListener implements PostHideListener {
+    public static class HideListener implements PostsAdapter.PostHideListener {
         private final WeakReference<PostsListFragment> fRef;
 
         public HideListener(PostsListFragment f) {
@@ -257,6 +246,25 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private static class PostClickListener implements PostsAdapter.PostClickListener {
+        private final WeakReference<PostsListFragment> fRef;
+
+        private PostClickListener(PostsListFragment f) {
+            this.fRef = new WeakReference<>(f);
+        }
+
+        @Override
+        public void onPostClicked(MetaDataedPost post) {
+            PostsListFragment f = fRef.get();
+            if (f == null) return;
+
+            Context context = f.getActivity();
+            if (context == null) return;
+
+            f.showPost(context, post);
         }
     }
 }
