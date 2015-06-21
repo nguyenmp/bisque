@@ -5,6 +5,7 @@ import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.text.style.TypefaceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ public class CommentPresenter {
     public static void bindListItem(CommentViewHolder holder, Comment comment) {
         Spanned spanned = processCommentText(comment);
         holder.comment_text.setText(spanned);
+        holder.comment_text.setMovementMethod(LinkMovementMethod.getInstance());
         holder.comment_author.setText(comment.commenting_user.username);
 
         ViewGroup.LayoutParams layoutParams = holder.padding.getLayoutParams();
