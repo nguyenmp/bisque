@@ -20,6 +20,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     // any time you make changes to your database objects, you may have to increase the database version
     private static final int DATABASE_VERSION = 4;
 
+    public static final Object dbLock = new Object();
+
     // the DAO object we use to access the MetadataedPostData table
     private Dao<PostMetadata, Integer> postDao = null;
     private Dao<CommentMetadata, Integer> commentDao = null;

@@ -15,11 +15,13 @@ import ninja.mpnguyen.chowders.things.json.Post;
 public class MetafyTask extends FetcherTask<MetaDataedPost[]> {
     private final WeakReference<Context> contextRef;
     private final Post[] posts;
+    private final boolean showDeleted;
 
-    public MetafyTask(@Nullable Context context, @NonNull Post[] posts, FetcherTask.Listener<MetaDataedPost[]> listener) {
+    public MetafyTask(@Nullable Context context, @NonNull Post[] posts, FetcherTask.Listener<MetaDataedPost[]> listener, boolean showDeleted) {
         super(listener);
         this.contextRef = new WeakReference<>(context);
         this.posts = posts;
+        this.showDeleted = showDeleted;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class MetafyTask extends FetcherTask<MetaDataedPost[]> {
             ArrayList<MetaDataedPost> metaDataedPosts = new ArrayList<>(posts.length);
             for (Post post : posts) {
                 MetaDataedPost metadata = PostHelper.getMetadata(post, context);
-                metaDataedPosts.add(metadata);
+                if (showDeleted || !metadata.metadata.hidden) metaDataedPosts.add(metadata);
             }
             return metaDataedPosts.toArray(new MetaDataedPost[metaDataedPosts.size()]);
         } catch (SQLException e) {

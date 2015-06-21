@@ -19,12 +19,14 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final int TYPE_POST = 0, TYPE_ERROR = 1, TYPE_EMPTY = 2, TYPE_LOADING = 3;
     private final MetaDataedPost[] posts;
     private final boolean loading;
-    private final PostsListFragment.PostClickListener listener;
+    private final PostsListFragment.PostClickListener clickListener;
+    private final PostsListFragment.PostHideListener hideListener;
 
-    public PostsAdapter(@Nullable MetaDataedPost[] posts, boolean loading, PostsListFragment.PostClickListener listener) {
+    public PostsAdapter(@Nullable MetaDataedPost[] posts, boolean loading, PostsListFragment.PostClickListener clickListener, PostsListFragment.PostHideListener hideListener) {
         this.posts = posts;
         this.loading = loading;
-        this.listener = listener;
+        this.clickListener = clickListener;
+        this.hideListener = hideListener;
         setHasStableIds(true);
     }
 
@@ -44,8 +46,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (getItemViewType(position) == TYPE_POST && posts != null) {
             PostItemViewHolder postItemViewHolder = (PostItemViewHolder) viewHolder;
             MetaDataedPost post = posts[position];
-            View.OnClickListener listener = new PostItemClickListener(post, this.listener);
+            View.OnClickListener listener = new PostItemClickListener(post, this.clickListener);
             postItemViewHolder.vh.cardView.setOnClickListener(listener);
+            postItemViewHolder.vh.action_delete.setOnClickListener(new PostHideClickListener(hideListener, post));
             PostsPresenter.bindListItem(postItemViewHolder, new MetaDataedPost(post));
         } else if (type == TYPE_LOADING) {
             ProgressViewHolder progressViewHolder = (ProgressViewHolder) viewHolder;
@@ -83,6 +86,21 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         // If there's a problem, make space for an error message
         if (loading || posts == null || posts.length == 0) return 1;
         else return posts.length;
+    }
+
+    private static class PostHideClickListener implements View.OnClickListener {
+        private final PostsListFragment.PostHideListener listener;
+        private final MetaDataedPost post;
+
+        private PostHideClickListener(PostsListFragment.PostHideListener listener, MetaDataedPost post) {
+            this.listener = listener;
+            this.post = post;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (listener != null) listener.onPostHidden(post);
+        }
     }
 
     private static class PostItemClickListener implements View.OnClickListener {

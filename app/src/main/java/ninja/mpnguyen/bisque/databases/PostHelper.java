@@ -26,34 +26,40 @@ public class PostHelper extends Observable {
     }
 
     public static MetaDataedPost getMetadata(Post post, Context context) throws SQLException {
-        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        Dao<PostMetadata, Integer> dao = databaseHelper.getPostDao();
-        QueryBuilder<PostMetadata, Integer> builder = dao.queryBuilder();
-        builder.where().eq(PostMetadata.COLUMN_NAME_SHORT_ID, post.short_id);
-        PreparedQuery<PostMetadata> query = builder.prepare();
-        PostMetadata storedPosts = dao.queryForFirst(query);
-        if (storedPosts == null) {
-            storedPosts = createMetadata(post, context);
+        synchronized (DatabaseHelper.dbLock) {
+            DatabaseHelper databaseHelper = new DatabaseHelper(context);
+            Dao<PostMetadata, Integer> dao = databaseHelper.getPostDao();
+            QueryBuilder<PostMetadata, Integer> builder = dao.queryBuilder();
+            builder.where().eq(PostMetadata.COLUMN_NAME_SHORT_ID, post.short_id);
+            PreparedQuery<PostMetadata> query = builder.prepare();
+            PostMetadata storedPosts = dao.queryForFirst(query);
+            if (storedPosts == null) {
+                storedPosts = createMetadata(post, context);
+            }
+            return new MetaDataedPost(storedPosts, post);
         }
-        return new MetaDataedPost(storedPosts, post);
     }
 
     public static boolean setMetadata(PostMetadata post, Context context) throws SQLException {
-        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        Dao<PostMetadata, Integer> dao = databaseHelper.getPostDao();
-        int update = dao.update(post);
+        synchronized (DatabaseHelper.dbLock) {
+            DatabaseHelper databaseHelper = new DatabaseHelper(context);
+            Dao<PostMetadata, Integer> dao = databaseHelper.getPostDao();
+            int update = dao.update(post);
 
-        observable.notifyChanged();
-        return update == 1;
+            observable.notifyChanged();
+            return update == 1;
+        }
     }
 
     public static PostMetadata createMetadata(Post post, Context context) throws SQLException {
-        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        Dao<PostMetadata, Integer> dao = databaseHelper.getPostDao();
-        PostMetadata postMetadata = new PostMetadata(post);
-        int create = dao.create(postMetadata);
+        synchronized (DatabaseHelper.dbLock) {
+            DatabaseHelper databaseHelper = new DatabaseHelper(context);
+            Dao<PostMetadata, Integer> dao = databaseHelper.getPostDao();
+            PostMetadata postMetadata = new PostMetadata(post);
+            int create = dao.create(postMetadata);
 
-        observable.notifyChanged();
-        return create == 1 ? postMetadata : null;
+            observable.notifyChanged();
+            return create == 1 ? postMetadata : null;
+        }
     }
 }

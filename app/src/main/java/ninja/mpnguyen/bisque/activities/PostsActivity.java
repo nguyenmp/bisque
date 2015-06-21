@@ -45,7 +45,7 @@ public class PostsActivity extends AppCompatActivity {
         } else {
             FragmentManager fm = getSupportFragmentManager();
             PostsListFragment f = (PostsListFragment) fm.findFragmentById(R.id.content_primary);
-            f.setListener(new PostClickListener(this));
+            f.setClickListener(new PostClickListener(this));
         }
 
         NavigationDrawerFragment f = (NavigationDrawerFragment)

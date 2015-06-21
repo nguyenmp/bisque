@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.ref.WeakReference;
+import java.sql.SQLException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -24,6 +26,7 @@ import ninja.mpnguyen.bisque.databases.PostHelper;
 import ninja.mpnguyen.bisque.loaders.PostsLoaderCallbacks;
 import ninja.mpnguyen.bisque.nio.RefreshingListener;
 import ninja.mpnguyen.bisque.things.MetaDataedPost;
+import ninja.mpnguyen.bisque.things.PostMetadata;
 import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
 import ninja.mpnguyen.chowders.things.json.Post;
 
@@ -32,20 +35,24 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         void onPostClicked(MetaDataedPost post);
     }
 
-    private final Observer postsObserver = new PostsObserver(this);
-
-    public void setListener(PostClickListener listener) {
-        this.listener = listener;
+    public interface PostHideListener {
+        void onPostHidden(MetaDataedPost post);
     }
 
-    public PostClickListener listener = null;
+    private final Observer postsObserver = new PostsObserver(this);
+
+    public void setClickListener(PostClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    public PostClickListener clickListener = null;
 
     // TODO: I really don't like this global state... I should get rid of this
     public volatile Post[] posts = null;
 
-    public static PostsListFragment newInstance(PostClickListener listener) {
+    public static PostsListFragment newInstance(PostClickListener clickListener) {
         PostsListFragment f = new PostsListFragment();
-        f.setListener(listener);
+        f.setClickListener(clickListener);
         return f;
     }
 
@@ -91,7 +98,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        recyclerView.swapAdapter(new PostsAdapter(null, true, listener), false);
+        recyclerView.swapAdapter(new PostsAdapter(null, true, clickListener, new HideListener(this)), false);
 
         return result;
     }
@@ -137,18 +144,20 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
 
         SwipeRefreshLayout swipeRefreshLayout = andResetRefresher ? (SwipeRefreshLayout) view.findViewById(R.id.swipe) : null;
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.content_view);
-        PostsFetchedListener listener = new PostsFetchedListener(this.listener, swipeRefreshLayout, recyclerView);
-        new MetafyTask(getActivity(), posts, listener).execute();
+        PostsFetchedListener listener = new PostsFetchedListener(this.clickListener, new HideListener(this), swipeRefreshLayout, recyclerView);
+        new MetafyTask(getActivity(), posts, listener, false).execute();
     }
 
     private static class PostsFetchedListener extends RefreshingListener<MetaDataedPost[]> {
-        private final PostClickListener listener;
+        private final PostClickListener clickListener;
+        private final PostHideListener hideListener;
         private final WeakReference<RecyclerView> recyclerRef;
 
-        private PostsFetchedListener(PostClickListener listener, @Nullable SwipeRefreshLayout refreshLayout, @Nullable RecyclerView content) {
+        private PostsFetchedListener(PostClickListener clickListener, PostHideListener hideListener, @Nullable SwipeRefreshLayout refreshLayout, @Nullable RecyclerView content) {
             super(refreshLayout);
             this.recyclerRef = new WeakReference<>(content);
-            this.listener = listener;
+            this.clickListener = clickListener;
+            this.hideListener = hideListener;
         }
 
         @Override
@@ -157,7 +166,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
             RecyclerView recycler = recyclerRef.get();
             if (recycler == null) return;
 
-            recycler.swapAdapter(new PostsAdapter(result, false, listener), false);
+            recycler.swapAdapter(new PostsAdapter(result, false, clickListener, hideListener), false);
         }
 
         @Override
@@ -166,7 +175,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
             RecyclerView recycler = recyclerRef.get();
             if (recycler == null) return;
 
-            recycler.swapAdapter(new PostsAdapter(null, false, listener), false);
+            recycler.swapAdapter(new PostsAdapter(null, false, clickListener, hideListener), false);
         }
     }
 
@@ -192,6 +201,34 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
                 observable.deleteObserver(this);
             } else {
                 f.updateMetadata(false);
+            }
+        }
+    }
+
+    public static class HideListener implements PostHideListener {
+        private final WeakReference<PostsListFragment> fRef;
+
+        public HideListener(PostsListFragment f) {
+            this.fRef = new WeakReference<>(f);
+        }
+
+        @Override
+        public void onPostHidden(MetaDataedPost post) {
+            PostsListFragment f = fRef.get();
+            if (f == null) return;
+
+            FragmentActivity a = f.getActivity();
+            if (a == null) return;
+
+            PostMetadata metadata = post.metadata;
+            metadata.hidden = true;
+
+            try {
+                PostHelper.setMetadata(metadata, a);
+                f.updateMetadata(false);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                // TODO: Show a snack bar that this failed
             }
         }
     }
