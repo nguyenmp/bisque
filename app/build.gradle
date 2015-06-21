@@ -52,4 +52,5 @@ dependencies {
     compile 'com.anupcowkur:reservoir:2.0'
     compile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
     compile 'com.google.android.gms:play-services-analytics:7.5.0'
+    compile 'com.android.support:design:22.2.0'
 }

@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
@@ -226,9 +227,35 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
             try {
                 PostHelper.setMetadata(metadata, a);
                 f.updateMetadata(false);
+
+                // Try to show the undo SnackBar
+                View view = f.getView();
+                if (view != null) {
+                    Snackbar.make(view, "Post Hidden", Snackbar.LENGTH_LONG)
+                            .setAction("Unhide", new PostUnhideListener(metadata))
+                            .show();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
-                // TODO: Show a snack bar that this failed
+            }
+        }
+    }
+
+    private static class PostUnhideListener implements View.OnClickListener {
+        private final PostMetadata metadata;
+
+        private PostUnhideListener(PostMetadata metadata) {
+            this.metadata = metadata;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Context context = v.getContext();
+            metadata.hidden = false;
+            try {
+                PostHelper.setMetadata(metadata, context);
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }
