@@ -7,7 +7,6 @@ import android.util.Log;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 
@@ -22,9 +21,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public static final Object dbLock = new Object();
 
-    // the DAO object we use to access the MetadataedPostData table
-    private Dao<PostMetadata, Integer> postDao = null;
-    private Dao<CommentMetadata, Integer> commentDao = null;
+    private DaoContainer[] daos = new DaoContainer[] {
+            new BasicDaoContainer() {
+                @Override
+                public Class getDataClass() {
+                    return PostMetadata.class;
+                }
+            },
+            new BasicDaoContainer() {
+                @Override
+                public Class getDataClass() {
+                    return CommentMetadata.class;
+                }
+            }
+    };
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -34,8 +44,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
             Log.i(DatabaseHelper.class.getName(), "onCreate");
-            TableUtils.createTable(connectionSource, PostMetadata.class);
-            TableUtils.createTable(connectionSource, CommentMetadata.class);
+            for (DaoContainer dao : daos) {
+                dao.onCreate(database, connectionSource);
+            }
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
             throw new RuntimeException(e);
@@ -46,10 +57,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try {
             Log.i(DatabaseHelper.class.getName(), "onUpgrade");
-            TableUtils.dropTable(connectionSource, PostMetadata.class, true);
-            TableUtils.dropTable(connectionSource, CommentMetadata.class, true);
-            // after we drop the old databases, we create the new ones
-            onCreate(database, connectionSource);
+            for (DaoContainer dao : daos) {
+                dao.onUpgrade(database, connectionSource, oldVersion, newVersion);
+            }
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
             throw new RuntimeException(e);
@@ -61,10 +71,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
      * value.
      */
     public Dao<PostMetadata, Integer> getPostDao() throws SQLException {
-        if (postDao == null) {
-            postDao = getDao(PostMetadata.class);
-        }
-        return postDao;
+        return daos[0].getDao(this);
     }
 
     /**
@@ -72,10 +79,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
      * value.
      */
     public Dao<CommentMetadata, Integer> getCommentDao() throws SQLException {
-        if (commentDao == null) {
-            commentDao = getDao(CommentMetadata.class);
-        }
-        return commentDao;
+        return daos[1].getDao(this);
     }
 
     /**
@@ -84,6 +88,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void close() {
         super.close();
-        postDao = null;
+        for (DaoContainer dao : daos) {
+            dao.close();
+        }
     }
 }
