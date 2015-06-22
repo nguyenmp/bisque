@@ -1,11 +1,13 @@
 package ninja.mpnguyen.bisque.views.comments;
 
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,11 +32,19 @@ public class CommentPresenter {
         Spanned spanned = processCommentText(comment);
         holder.comment_text.setText(spanned);
         holder.comment_text.setMovementMethod(LinkMovementMethod.getInstance());
-        holder.comment_author.setText(comment.commenting_user.username);
+        Spanned heading = getHeading(comment);
+        holder.comment_author.setText(heading);
 
         ViewGroup.LayoutParams layoutParams = holder.padding.getLayoutParams();
         layoutParams.width = (comment.indent_level - 1) * 40;
         holder.padding.setLayoutParams(layoutParams);
+    }
+
+    private static Spanned getHeading(Comment comment) {
+        SpannableStringBuilder b = new SpannableStringBuilder(comment.commenting_user.username);
+        b.setSpan(new StyleSpan(Typeface.BOLD), 0, b.length(), 0);
+        b.append(" ").append(Integer.toString(comment.score)).append(" points ");
+        return b;
     }
 
     /**
