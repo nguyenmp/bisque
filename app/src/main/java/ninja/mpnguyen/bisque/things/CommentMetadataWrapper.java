@@ -7,22 +7,22 @@ import java.sql.SQLException;
 import ninja.mpnguyen.bisque.databases.CommentHelper;
 import ninja.mpnguyen.chowders.things.json.Comment;
 
-public class MetaDataedComment {
+public class CommentMetadataWrapper {
     public final CommentMetadata metadata;
     public final Comment comment;
 
-    public MetaDataedComment(CommentMetadata metadata, Comment comment) {
+    public CommentMetadataWrapper(CommentMetadata metadata, Comment comment) {
         this.metadata = metadata;
         this.comment = comment;
     }
 
-    public MetaDataedComment(MetaDataedComment other) {
+    public CommentMetadataWrapper(CommentMetadataWrapper other) {
         this.metadata = new CommentMetadata(other.metadata);
         this.comment = new Comment(other.comment);
     }
 
-    public static void hideChildren(boolean hide_children, MetaDataedComment metaDataedComment, Context context) {
-        CommentMetadata metadata = metaDataedComment.metadata;
+    public static void hideChildren(boolean hide_children, CommentMetadataWrapper commentMetadataWrapper, Context context) {
+        CommentMetadata metadata = commentMetadataWrapper.metadata;
         metadata.hide_children = hide_children;
         try {
             CommentHelper.setMetadata(metadata, context);
@@ -31,11 +31,11 @@ public class MetaDataedComment {
         }
     }
 
-    public static void hideChildren(MetaDataedComment metaDataedComment, Context context) {
-        hideChildren(true, metaDataedComment, context);
+    public static void hideChildren(CommentMetadataWrapper commentMetadataWrapper, Context context) {
+        hideChildren(true, commentMetadataWrapper, context);
     }
 
-    public static void unhideChildre(MetaDataedComment metaDataedComment, Context context) {
-        hideChildren(false, metaDataedComment, context);
+    public static void unhideChildre(CommentMetadataWrapper commentMetadataWrapper, Context context) {
+        hideChildren(false, commentMetadataWrapper, context);
     }
 }

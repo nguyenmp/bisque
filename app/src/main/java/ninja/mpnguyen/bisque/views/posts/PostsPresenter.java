@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.activities.StoryActivity;
 import ninja.mpnguyen.bisque.activities.UserActivity;
-import ninja.mpnguyen.bisque.things.MetaDataedPost;
+import ninja.mpnguyen.bisque.things.PostMetadataWrapper;
 import ninja.mpnguyen.bisque.things.PostMetadata;
 import ninja.mpnguyen.chowders.things.json.Post;
 
@@ -28,9 +28,9 @@ public class PostsPresenter {
         return new PostItemViewHolder(postView);
     }
 
-    public static void bindListItem(final PostItemViewHolder holder, final MetaDataedPost metaDataedPost) {
-        final PostMetadata metadata = metaDataedPost.metadata;
-        final Post post = metaDataedPost.post;
+    public static void bindListItem(final PostItemViewHolder holder, final PostMetadataWrapper postMetadataWrapper) {
+        final PostMetadata metadata = postMetadataWrapper.metadata;
+        final Post post = postMetadataWrapper.post;
 
         boolean animate = post.short_id.equals(holder.vh.short_id);
 
@@ -78,7 +78,7 @@ public class PostsPresenter {
             holder.vh.cardView.setElevation(end);
         }
 
-        bindItem(holder.vh, metaDataedPost);
+        bindItem(holder.vh, postMetadataWrapper);
         holder.vh.short_id = metadata.short_id;
     }
 
@@ -87,9 +87,9 @@ public class PostsPresenter {
         return new PostViewHolder(postView);
     }
 
-    public static void bindItem(PostViewHolder holder, final MetaDataedPost metaDataedPost) {
-        final PostMetadata metadata = metaDataedPost.metadata;
-        final Post post = metaDataedPost.post;
+    public static void bindItem(PostViewHolder holder, final PostMetadataWrapper postMetadataWrapper) {
+        final PostMetadata metadata = postMetadataWrapper.metadata;
+        final Post post = postMetadataWrapper.post;
 
         Context context = holder.itemView.getContext();
         Resources r = context.getResources();
@@ -146,7 +146,7 @@ public class PostsPresenter {
         holder.action_toggle_read.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MetaDataedPost.markAsRead(!metadata.read, metaDataedPost, v.getContext());
+                PostMetadataWrapper.markAsRead(!metadata.read, postMetadataWrapper, v.getContext());
             }
         });
     }

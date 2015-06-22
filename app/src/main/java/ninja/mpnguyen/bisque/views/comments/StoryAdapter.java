@@ -12,7 +12,7 @@ import java.sql.SQLException;
 
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.databases.PostHelper;
-import ninja.mpnguyen.bisque.things.MetaDataedPost;
+import ninja.mpnguyen.bisque.things.PostMetadataWrapper;
 import ninja.mpnguyen.bisque.things.PostMetadata;
 import ninja.mpnguyen.bisque.views.errors.ErrorPresenter;
 import ninja.mpnguyen.bisque.views.errors.ErrorViewHolder;
@@ -83,13 +83,13 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         int type = getItemViewType(position);
         if (type == TYPE_POST) {
-            MetaDataedPost metadataPost;
+            PostMetadataWrapper postWrapper;
             try {
-                metadataPost = PostHelper.getMetadata(story, viewHolder.itemView.getContext());
+                postWrapper = PostHelper.getMetadata(story, viewHolder.itemView.getContext());
             } catch (SQLException e) {
-                metadataPost = new MetaDataedPost(new PostMetadata(), story);
+                postWrapper = new PostMetadataWrapper(new PostMetadata(), story);
             }
-            PostsPresenter.bindItem((PostViewHolder) viewHolder, metadataPost);
+            PostsPresenter.bindItem((PostViewHolder) viewHolder, postWrapper);
             ((PostViewHolder) viewHolder).itemView.setOnClickListener(new PostClickListener(story));
         } else if (type == TYPE_COMMENT){
             Comment comment = story.comments[position - 1];

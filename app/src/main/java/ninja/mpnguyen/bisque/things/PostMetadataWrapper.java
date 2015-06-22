@@ -7,23 +7,23 @@ import java.sql.SQLException;
 import ninja.mpnguyen.bisque.databases.PostHelper;
 import ninja.mpnguyen.chowders.things.json.Post;
 
-public class MetaDataedPost {
+public class PostMetadataWrapper {
     public final PostMetadata metadata;
     public final Post post;
 
-    public MetaDataedPost(PostMetadata metadata, Post post) {
+    public PostMetadataWrapper(PostMetadata metadata, Post post) {
         this.metadata = metadata;
         this.post = post;
     }
 
-    public MetaDataedPost(MetaDataedPost other) {
+    public PostMetadataWrapper(PostMetadataWrapper other) {
         this.metadata = new PostMetadata(other.metadata);
         this.post = new Post(other.post);
     }
 
-    public static void markAsRead(boolean read, MetaDataedPost metaDataedPost, Context context) {
-        PostMetadata metadata = metaDataedPost.metadata;
-        Post post = metaDataedPost.post;
+    public static void markAsRead(boolean read, PostMetadataWrapper postMetadataWrapper, Context context) {
+        PostMetadata metadata = postMetadataWrapper.metadata;
+        Post post = postMetadataWrapper.post;
         metadata.read = read;
         metadata.last_read_comment_count = read ? post.comment_count : 0;
         try {
@@ -33,11 +33,11 @@ public class MetaDataedPost {
         }
     }
 
-    public static void markAsRead(MetaDataedPost metaDataedPost, Context context) {
-        markAsRead(true, metaDataedPost, context);
+    public static void markAsRead(PostMetadataWrapper postMetadataWrapper, Context context) {
+        markAsRead(true, postMetadataWrapper, context);
     }
 
-    public static void markAsUnread(MetaDataedPost metaDataedPost, Context context) {
-        markAsRead(false, metaDataedPost, context);
+    public static void markAsUnread(PostMetadataWrapper postMetadataWrapper, Context context) {
+        markAsRead(false, postMetadataWrapper, context);
     }
 }

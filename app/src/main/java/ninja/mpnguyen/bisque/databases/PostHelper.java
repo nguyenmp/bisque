@@ -9,7 +9,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import java.sql.SQLException;
 import java.util.Observable;
 
-import ninja.mpnguyen.bisque.things.MetaDataedPost;
+import ninja.mpnguyen.bisque.things.PostMetadataWrapper;
 import ninja.mpnguyen.bisque.things.PostMetadata;
 import ninja.mpnguyen.chowders.things.json.Post;
 
@@ -25,18 +25,18 @@ public class PostHelper extends Observable {
         notifyObservers();
     }
 
-    public static MetaDataedPost getMetadata(Post post, Context context) throws SQLException {
+    public static PostMetadataWrapper getMetadata(Post post, Context context) throws SQLException {
         synchronized (DatabaseHelper.dbLock) {
             DatabaseHelper databaseHelper = new DatabaseHelper(context);
             Dao<PostMetadata, Integer> dao = databaseHelper.getPostDao();
             QueryBuilder<PostMetadata, Integer> builder = dao.queryBuilder();
             builder.where().eq(PostMetadata.COLUMN_NAME_SHORT_ID, post.short_id);
             PreparedQuery<PostMetadata> query = builder.prepare();
-            PostMetadata storedPosts = dao.queryForFirst(query);
-            if (storedPosts == null) {
-                storedPosts = createMetadata(post, context);
+            PostMetadata postMetadata = dao.queryForFirst(query);
+            if (postMetadata == null) {
+                postMetadata = createMetadata(post, context);
             }
-            return new MetaDataedPost(storedPosts, post);
+            return new PostMetadataWrapper(postMetadata, post);
         }
     }
 

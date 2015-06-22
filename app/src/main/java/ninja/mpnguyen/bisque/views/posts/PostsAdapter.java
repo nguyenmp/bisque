@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.bisque.things.MetaDataedPost;
+import ninja.mpnguyen.bisque.things.PostMetadataWrapper;
 import ninja.mpnguyen.bisque.views.errors.ErrorPresenter;
 import ninja.mpnguyen.bisque.views.errors.ErrorViewHolder;
 import ninja.mpnguyen.bisque.views.progress.ProgressPresenter;
@@ -16,20 +16,20 @@ import ninja.mpnguyen.bisque.views.progress.ProgressViewHolder;
 
 public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public interface PostClickListener {
-        void onPostClicked(MetaDataedPost post);
+        void onPostClicked(PostMetadataWrapper post);
     }
 
     public interface PostHideListener {
-        void onPostHidden(MetaDataedPost post);
+        void onPostHidden(PostMetadataWrapper post);
     }
 
     private final int TYPE_POST = 0, TYPE_ERROR = 1, TYPE_EMPTY = 2, TYPE_LOADING = 3;
-    private final MetaDataedPost[] posts;
+    private final PostMetadataWrapper[] posts;
     private final boolean loading;
     private final PostClickListener clickListener;
     private final PostHideListener hideListener;
 
-    public PostsAdapter(@Nullable MetaDataedPost[] posts, boolean loading, PostClickListener clickListener, PostHideListener hideListener) {
+    public PostsAdapter(@Nullable PostMetadataWrapper[] posts, boolean loading, PostClickListener clickListener, PostHideListener hideListener) {
         this.posts = posts;
         this.loading = loading;
         this.clickListener = clickListener;
@@ -52,11 +52,11 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         int type = getItemViewType(position);
         if (getItemViewType(position) == TYPE_POST && posts != null) {
             PostItemViewHolder postItemViewHolder = (PostItemViewHolder) viewHolder;
-            MetaDataedPost post = posts[position];
-            View.OnClickListener listener = new PostItemClickListener(post, this.clickListener);
+            PostMetadataWrapper postWrapper = posts[position];
+            View.OnClickListener listener = new PostItemClickListener(postWrapper, this.clickListener);
             postItemViewHolder.vh.cardView.setOnClickListener(listener);
-            postItemViewHolder.vh.action_delete.setOnClickListener(new PostHideClickListener(hideListener, post));
-            PostsPresenter.bindListItem(postItemViewHolder, new MetaDataedPost(post));
+            postItemViewHolder.vh.action_delete.setOnClickListener(new PostHideClickListener(hideListener, postWrapper));
+            PostsPresenter.bindListItem(postItemViewHolder, new PostMetadataWrapper(postWrapper));
         } else if (type == TYPE_LOADING) {
             ProgressViewHolder progressViewHolder = (ProgressViewHolder) viewHolder;
             Context context = progressViewHolder.loadingText.getContext();
@@ -97,9 +97,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private static class PostHideClickListener implements View.OnClickListener {
         private final PostHideListener listener;
-        private final MetaDataedPost post;
+        private final PostMetadataWrapper post;
 
-        private PostHideClickListener(PostHideListener listener, MetaDataedPost post) {
+        private PostHideClickListener(PostHideListener listener, PostMetadataWrapper post) {
             this.listener = listener;
             this.post = post;
         }
@@ -111,10 +111,10 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     private static class PostItemClickListener implements View.OnClickListener {
-        private final MetaDataedPost post;
+        private final PostMetadataWrapper post;
         private final PostClickListener listener;
 
-        private PostItemClickListener(MetaDataedPost post, PostClickListener listener) {
+        private PostItemClickListener(PostMetadataWrapper post, PostClickListener listener) {
             this.post = post;
             this.listener = listener;
         }

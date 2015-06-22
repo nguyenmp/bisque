@@ -9,12 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import java.lang.ref.WeakReference;
-
 import ninja.mpnguyen.bisque.NavigationDrawerFragment;
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.fragments.PostsListFragment;
-import ninja.mpnguyen.bisque.things.MetaDataedPost;
 
 public class PostsActivity extends AppCompatActivity {
 

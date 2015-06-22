@@ -14,7 +14,7 @@ import java.util.List;
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.databases.PostHelper;
 import ninja.mpnguyen.bisque.fragments.story.StoryListFragment;
-import ninja.mpnguyen.bisque.things.MetaDataedPost;
+import ninja.mpnguyen.bisque.things.PostMetadataWrapper;
 import ninja.mpnguyen.chowders.things.json.Post;
 import ninja.mpnguyen.chowders.things.json.Story;
 
@@ -30,8 +30,8 @@ public class StoryActivity extends AppCompatActivity {
         context.startActivity(intent);
 
         try {
-            MetaDataedPost metadata = PostHelper.getMetadata(post, context);
-            MetaDataedPost.markAsRead(metadata, context);
+            PostMetadataWrapper metadataWrapper = PostHelper.getMetadata(post, context);
+            PostMetadataWrapper.markAsRead(metadataWrapper, context);
         } catch (SQLException ignored) {
         }
     }

@@ -27,7 +27,7 @@ import ninja.mpnguyen.bisque.databases.MetafyTask;
 import ninja.mpnguyen.bisque.databases.PostHelper;
 import ninja.mpnguyen.bisque.loaders.PostsLoaderCallbacks;
 import ninja.mpnguyen.bisque.nio.RefreshingListener;
-import ninja.mpnguyen.bisque.things.MetaDataedPost;
+import ninja.mpnguyen.bisque.things.PostMetadataWrapper;
 import ninja.mpnguyen.bisque.things.PostMetadata;
 import ninja.mpnguyen.bisque.views.posts.PostsAdapter;
 import ninja.mpnguyen.chowders.things.json.Post;
@@ -134,7 +134,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         new MetafyTask(getActivity(), posts, listener, false).execute();
     }
 
-    private static class PostsFetchedListener extends RefreshingListener<MetaDataedPost[]> {
+    private static class PostsFetchedListener extends RefreshingListener<PostMetadataWrapper[]> {
         private final PostClickListener clickListener;
         private final PostsAdapter.PostHideListener hideListener;
         private final WeakReference<RecyclerView> recyclerRef;
@@ -147,7 +147,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         }
 
         @Override
-        public void onSuccess(@NonNull MetaDataedPost[] result) {
+        public void onSuccess(@NonNull PostMetadataWrapper[] result) {
             super.onSuccess(result);
             RecyclerView recycler = recyclerRef.get();
             if (recycler == null) return;
@@ -165,7 +165,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         }
     }
 
-    public void showPost(Context context, MetaDataedPost post) {
+    public void showPost(Context context, PostMetadataWrapper post) {
         StoryActivity.showPost(context, post.post, false);
     }
 
@@ -203,7 +203,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         }
 
         @Override
-        public void onPostHidden(MetaDataedPost post) {
+        public void onPostHidden(PostMetadataWrapper post) {
             PostsListFragment f = fRef.get();
             if (f == null) return;
 
@@ -257,7 +257,7 @@ public class PostsListFragment extends Fragment implements SwipeRefreshLayout.On
         }
 
         @Override
-        public void onPostClicked(MetaDataedPost post) {
+        public void onPostClicked(PostMetadataWrapper post) {
             PostsListFragment f = fRef.get();
             if (f == null) return;
 
