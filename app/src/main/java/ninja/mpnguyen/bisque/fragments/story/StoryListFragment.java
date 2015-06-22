@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import ninja.mpnguyen.bisque.R;
@@ -27,7 +28,7 @@ import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
 import ninja.mpnguyen.chowders.things.json.Post;
 import ninja.mpnguyen.chowders.things.json.Story;
 
-public class StoryListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class StoryListFragment extends Fragment {
     public static final String ARGUMENT_POST = "ninja.mpnguyen.bisque.fragments.story.StoryListFragment.ARGUMENT_POST";
     public static final String ARGUMENT_SHORT_ID = "ninja.mpnguyen.bisque.fragments.story.StoryListFragment.ARGUMENT_SHORT_ID";
     public static final String ARGUMENT_COMMENTS = "ninja.mpnguyen.bisque.fragments.story.StoryListFragment.ARGuMENT_COMMENTS";
@@ -101,7 +102,7 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         View v = inflater.inflate(R.layout.fragment_list_story, container, false);
         Story story = getStoryFromArgs();
 
-        initSwipeRefreshView(v, this);
+        initSwipeRefreshView(v, new RefreshListener(this));
         initRecyclerView(v, story);
         webview = initWebView(v, story);
         initSliderController(v, inflater, story);
@@ -203,10 +204,7 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         return args.containsKey(ARGUMENT_SHORT_ID) ? args.getString(ARGUMENT_SHORT_ID) : null;
     }
 
-    @Override
     public void onRefresh() {
-        // TODO: I really don't like how we're implementing a fragment as a listener... could memory leak
-
         View v = getView();
         if (v == null) return;
 
@@ -219,6 +217,21 @@ public class StoryListFragment extends Fragment implements SwipeRefreshLayout.On
         String short_id = getShortIDFromArgs();
         StoryFetchedListener listener = new StoryFetchedListener(swipeRefreshLayout, recyclerView, getStoryFromArgs());
         new StoryFetcherTask(listener, short_id).execute();
+    }
+
+    /** Indirection listener which allows us to prevent memory leaking our fragment + context */
+    private static class RefreshListener implements SwipeRefreshLayout.OnRefreshListener {
+        private final WeakReference<StoryListFragment> fRef;
+
+        public RefreshListener(StoryListFragment f) {
+            fRef = new WeakReference<>(f);
+        }
+
+        @Override
+        public void onRefresh() {
+            StoryListFragment f = fRef.get();
+            if (f != null) f.onRefresh();
+        }
     }
 
 }
