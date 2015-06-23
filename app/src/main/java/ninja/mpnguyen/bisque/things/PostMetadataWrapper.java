@@ -2,12 +2,13 @@ package ninja.mpnguyen.bisque.things;
 
 import android.content.Context;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import ninja.mpnguyen.bisque.databases.PostHelper;
 import ninja.mpnguyen.chowders.things.json.Post;
 
-public class PostMetadataWrapper {
+public class PostMetadataWrapper implements Serializable {
     public final PostMetadata metadata;
     public final Post post;
 

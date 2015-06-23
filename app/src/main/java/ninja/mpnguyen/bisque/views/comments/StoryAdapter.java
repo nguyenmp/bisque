@@ -8,30 +8,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.sql.SQLException;
-
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.bisque.databases.PostHelper;
-import ninja.mpnguyen.bisque.things.PostMetadataWrapper;
-import ninja.mpnguyen.bisque.things.PostMetadata;
+import ninja.mpnguyen.bisque.things.CommentMetadataWrapper;
+import ninja.mpnguyen.bisque.things.StoryMetadataWrapper;
 import ninja.mpnguyen.bisque.views.errors.ErrorPresenter;
 import ninja.mpnguyen.bisque.views.errors.ErrorViewHolder;
 import ninja.mpnguyen.bisque.views.posts.PostViewHolder;
 import ninja.mpnguyen.bisque.views.posts.PostsPresenter;
 import ninja.mpnguyen.bisque.views.progress.ProgressPresenter;
 import ninja.mpnguyen.bisque.views.progress.ProgressViewHolder;
-import ninja.mpnguyen.chowders.things.json.Comment;
 import ninja.mpnguyen.chowders.things.json.Post;
-import ninja.mpnguyen.chowders.things.json.Story;
 
 public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_POST = 0, TYPE_COMMENT = 1, TYPE_ERROR = 2, TYPE_EMPTY = 3, TYPE_LOADING = 4;
-    private final Story story;
+    private final StoryMetadataWrapper storyWrapper;
     private final boolean showLoading;
 
-    public StoryAdapter(Story story, boolean showLoading) {
+    public StoryAdapter(StoryMetadataWrapper storyWrapper, boolean showLoading) {
         super();
-        this.story = story;
+        this.storyWrapper = storyWrapper;
         this.showLoading = showLoading;
         setHasStableIds(true);
     }
@@ -57,7 +52,7 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (type == TYPE_POST) {
             return 0; // Just force the story to have it's own unique id as 0
         } else if (type == TYPE_COMMENT) {
-            return story.comments[position - 1].short_id.hashCode();
+            return storyWrapper.commentWrappers[position - 1].comment.short_id.hashCode();
         } else if (type == TYPE_ERROR){
             return -1;
         } else if (type == TYPE_LOADING) {
@@ -69,12 +64,12 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        if (story == null) return showLoading ? TYPE_LOADING : TYPE_ERROR;
+        if (storyWrapper == null) return showLoading ? TYPE_LOADING : TYPE_ERROR;
         else {
             if (position == 0) return TYPE_POST;
             else if (showLoading) return TYPE_LOADING;
-            else if (story.comments == null) return TYPE_ERROR;
-            else if (story.comments.length == 0) return TYPE_EMPTY;
+            else if (storyWrapper.commentWrappers == null) return TYPE_ERROR;
+            else if (storyWrapper.commentWrappers.length == 0) return TYPE_EMPTY;
             else return TYPE_COMMENT;
         }
     }
@@ -83,17 +78,11 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         int type = getItemViewType(position);
         if (type == TYPE_POST) {
-            PostMetadataWrapper postWrapper;
-            try {
-                postWrapper = PostHelper.getMetadata(story, viewHolder.itemView.getContext());
-            } catch (SQLException e) {
-                postWrapper = new PostMetadataWrapper(new PostMetadata(), story);
-            }
-            PostsPresenter.bindItem((PostViewHolder) viewHolder, postWrapper);
-            ((PostViewHolder) viewHolder).itemView.setOnClickListener(new PostClickListener(story));
+            PostsPresenter.bindItem((PostViewHolder) viewHolder, storyWrapper.postWrapper);
+            ((PostViewHolder) viewHolder).itemView.setOnClickListener(new PostClickListener(storyWrapper.postWrapper.post));
         } else if (type == TYPE_COMMENT){
-            Comment comment = story.comments[position - 1];
-            CommentPresenter.bindListItem((CommentViewHolder) viewHolder, comment);
+            CommentMetadataWrapper commentWrapper = storyWrapper.commentWrappers[position - 1];
+            CommentPresenter.bindListItem((CommentViewHolder) viewHolder, commentWrapper.comment);
         } else if (type == TYPE_ERROR) {
             ErrorViewHolder errorViewHolder = (ErrorViewHolder) viewHolder;
             Context context = errorViewHolder.errorView.getContext();
@@ -118,11 +107,11 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        if (story == null) return 1;
+        if (storyWrapper == null) return 1;
         else if (showLoading) return 2;
-        else if (story.comments == null) return 2;
-        else if (story.comments.length == 0) return 2;
-        else return story.comments.length + 1;
+        else if (storyWrapper.commentWrappers == null) return 2;
+        else if (storyWrapper.commentWrappers.length == 0) return 2;
+        else return storyWrapper.commentWrappers.length + 1;
     }
 
     private static class PostClickListener implements View.OnClickListener {

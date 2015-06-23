@@ -23,15 +23,19 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.bisque.nio.StoryFetcherTask;
+import ninja.mpnguyen.bisque.things.BisqueStory;
+import ninja.mpnguyen.bisque.things.PostMetadataWrapper;
+import ninja.mpnguyen.bisque.things.StoryMetadataWrapper;
 import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
 import ninja.mpnguyen.chowders.things.json.Post;
-import ninja.mpnguyen.chowders.things.json.Story;
 
 public class StoryListFragment extends Fragment {
     public static final String ARGUMENT_POST = "ninja.mpnguyen.bisque.fragments.story.StoryListFragment.ARGUMENT_POST";
     public static final String ARGUMENT_SHORT_ID = "ninja.mpnguyen.bisque.fragments.story.StoryListFragment.ARGUMENT_SHORT_ID";
     public static final String ARGUMENT_COMMENTS = "ninja.mpnguyen.bisque.fragments.story.StoryListFragment.ARGuMENT_COMMENTS";
+
+    private static final String STATE_STORY = "ninja.mpnguyen.bisque.fragments.story.StoryListFragment.STATE_STORY";
+    private static final String STATE_METAFIED_STORY = "ninja.mpnguyen.bisque.fragments.story.StoryListFragment.STATE_METAFIED_STORY";
 
     public static class Builder {
         private Post post = null;
@@ -100,7 +104,7 @@ public class StoryListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View v = inflater.inflate(R.layout.fragment_list_story, container, false);
-        Story story = getStoryFromArgs();
+        StoryMetadataWrapper story = getStoryFromArgs();
 
         initSwipeRefreshView(v, new RefreshListener(this));
         initRecyclerView(v, story);
@@ -124,7 +128,7 @@ public class StoryListFragment extends Fragment {
         if (webview != null) webview.onResume();
     }
 
-    private static void initSliderController(View v, LayoutInflater inflater, Story story) {
+    private static void initSliderController(View v, LayoutInflater inflater, StoryMetadataWrapper story) {
         Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
         WebView webview = (WebView) v.findViewById(R.id.webview);
         SlidingUpPanelLayout slidr = (SlidingUpPanelLayout) v.findViewById(R.id.slidinglayout);
@@ -136,11 +140,11 @@ public class StoryListFragment extends Fragment {
         View webbar = handle.findViewById(R.id.story_web_bar);
         WebBarListener.bindWebController(webbar, new WebBarListener(webview, slidr));
         View commentsbar = handle.findViewById(R.id.story_comments_bar);
-        CommentsBarListener.bindComments(commentsbar, new CommentsBarListener(story.comments_url, inflater.getContext(), slidr));
+        CommentsBarListener.bindComments(commentsbar, new CommentsBarListener(story == null ? null : story.postWrapper.post.comments_url, inflater.getContext(), slidr));
 
     }
 
-    private static void initRecyclerView(View v, Story story) {
+    private static void initRecyclerView(View v, StoryMetadataWrapper story) {
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.content_view);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(v.getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -154,19 +158,69 @@ public class StoryListFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(listener);
     }
 
-    private static WebView initWebView(View v, Story story) {
+    private static WebView initWebView(View v, StoryMetadataWrapper story) {
         WebView webview = (WebView) v.findViewById(R.id.webview);
         WebSettings settings = webview.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
 
-        webview.loadUrl(story.url);
+        if (story != null && story.postWrapper != null && story.postWrapper.post != null
+                && story.postWrapper.post.url != null) {
+            webview.loadUrl(story.postWrapper.post.url);
+        }
 
         final ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.webview_progress);
         webview.setWebChromeClient(new WebViewChromeClient(progressBar));
         webview.setWebViewClient(new WebViewClient());
         return webview;
+    }
+
+    /**
+     * Tries to pull previous non-metafied data from our state and metafy it.
+     *
+     * The result of this metafication should be stored into the state afterwards.
+     *
+     * If no data is found, we simply drop this call.
+     */
+    public void updateMetadata() {
+        Bundle args = getArguments();
+        if (args.containsKey(STATE_STORY)) {
+            BisqueStory story = (BisqueStory) args.getSerializable(STATE_STORY);
+            updateMetadata(story);
+        }
+    }
+
+    /** The last metafication task that was run. Used to
+     * cancel previous metifications so they don't overlap. */
+    MetafyTask task = null;
+
+    /**
+     * Stories this non-metafied data from our state and metafy it.
+     *
+     * The result of this metafication should be stored into the state afterwards.
+     */
+    public void updateMetadata(BisqueStory story) {
+        if (task != null) {
+            task.cancel(false);
+            task = null;
+        }
+
+        Bundle args = getArguments();
+        args.putSerializable(STATE_STORY, story);
+
+        View v = getView();
+        if (v == null) return;
+
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe);
+        if (swipeRefreshLayout == null) return;
+
+        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.content_view);
+        if (recyclerView == null) return;
+
+        StoryMetafiedListener listener = new StoryMetafiedListener(swipeRefreshLayout, recyclerView, null);
+        task = new MetafyTask(story, v.getContext(), listener);
+        task.execute();
     }
 
     @Override
@@ -193,10 +247,12 @@ public class StoryListFragment extends Fragment {
         if (webview != null) webview.destroy();
     }
 
-    private Story getStoryFromArgs() {
-        Bundle args = getArguments();
-        Post post = args.containsKey(ARGUMENT_POST) ? (Post) args.getSerializable(ARGUMENT_POST) : null;
-        return new Story(post);
+    private StoryMetadataWrapper getStoryFromArgs() {
+        // TODO: This used to be fine but now we need to do a DB operation on the UI thread...
+        return null;
+//        Bundle args = getArguments();
+//        Post post = args.containsKey(ARGUMENT_POST) ? (Post) args.getSerializable(ARGUMENT_POST) : null;
+//        return new Story(post);
     }
 
     private String getShortIDFromArgs() {
@@ -215,7 +271,7 @@ public class StoryListFragment extends Fragment {
         if (recyclerView == null) return;
 
         String short_id = getShortIDFromArgs();
-        StoryFetchedListener listener = new StoryFetchedListener(swipeRefreshLayout, recyclerView, getStoryFromArgs());
+        StoryFetchedListener listener = new StoryFetchedListener(this, swipeRefreshLayout, recyclerView, getStoryFromArgs());
         new StoryFetcherTask(listener, short_id).execute();
     }
 

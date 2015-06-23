@@ -26,34 +26,40 @@ public class CommentHelper extends Observable {
     }
 
     public static CommentMetadataWrapper getMetadata(Comment comment, Context context) throws SQLException {
-        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        Dao<CommentMetadata, Integer> dao = databaseHelper.getCommentDao();
-        QueryBuilder<CommentMetadata, Integer> builder = dao.queryBuilder();
-        builder.where().eq(CommentMetadata.COLUMN_NAME_SHORT_ID, comment.short_id);
-        PreparedQuery<CommentMetadata> query = builder.prepare();
-        CommentMetadata commentMetadata = dao.queryForFirst(query);
-        if (commentMetadata == null) {
-            commentMetadata = createMetadata(comment, context);
+        synchronized (DatabaseHelper.dbLock) {
+            DatabaseHelper databaseHelper = new DatabaseHelper(context);
+            Dao<CommentMetadata, Integer> dao = databaseHelper.getCommentDao();
+            QueryBuilder<CommentMetadata, Integer> builder = dao.queryBuilder();
+            builder.where().eq(CommentMetadata.COLUMN_NAME_SHORT_ID, comment.short_id);
+            PreparedQuery<CommentMetadata> query = builder.prepare();
+            CommentMetadata commentMetadata = dao.queryForFirst(query);
+            if (commentMetadata == null) {
+                commentMetadata = createMetadata(comment, context);
+            }
+            return new CommentMetadataWrapper(commentMetadata, comment);
         }
-        return new CommentMetadataWrapper(commentMetadata, comment);
     }
 
     public static boolean setMetadata(CommentMetadata comment, Context context) throws SQLException {
-        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        Dao<CommentMetadata, Integer> dao = databaseHelper.getCommentDao();
-        int update = dao.update(comment);
+        synchronized (DatabaseHelper.dbLock) {
+            DatabaseHelper databaseHelper = new DatabaseHelper(context);
+            Dao<CommentMetadata, Integer> dao = databaseHelper.getCommentDao();
+            int update = dao.update(comment);
 
-        observable.notifyChanged();
-        return update == 1;
+            observable.notifyChanged();
+            return update == 1;
+        }
     }
 
     public static CommentMetadata createMetadata(Comment comment, Context context) throws SQLException {
-        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        Dao<CommentMetadata, Integer> dao = databaseHelper.getCommentDao();
-        CommentMetadata commentMetadata = new CommentMetadata(comment);
-        int create = dao.create(commentMetadata);
+        synchronized (DatabaseHelper.dbLock) {
+            DatabaseHelper databaseHelper = new DatabaseHelper(context);
+            Dao<CommentMetadata, Integer> dao = databaseHelper.getCommentDao();
+            CommentMetadata commentMetadata = new CommentMetadata(comment);
+            int create = dao.create(commentMetadata);
 
-        observable.notifyChanged();
-        return create == 1 ? commentMetadata : null;
+            observable.notifyChanged();
+            return create == 1 ? commentMetadata : null;
+        }
     }
 }

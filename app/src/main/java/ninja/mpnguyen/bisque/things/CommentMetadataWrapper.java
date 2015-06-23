@@ -2,12 +2,13 @@ package ninja.mpnguyen.bisque.things;
 
 import android.content.Context;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import ninja.mpnguyen.bisque.databases.CommentHelper;
 import ninja.mpnguyen.chowders.things.json.Comment;
 
-public class CommentMetadataWrapper {
+public class CommentMetadataWrapper implements Serializable {
     public final CommentMetadata metadata;
     public final Comment comment;
 
