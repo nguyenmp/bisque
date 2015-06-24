@@ -108,7 +108,7 @@ public class StoryListFragment extends Fragment {
 
         initSwipeRefreshView(v, new RefreshListener(this));
         initRecyclerView(v, story);
-        webview = initWebView(v, story);
+        webview = initWebView(v);
         initSliderController(v, inflater, story);
 
         return v;
@@ -137,11 +137,6 @@ public class StoryListFragment extends Fragment {
         toolbar.removeAllViews();
         View handle = inflater.inflate(R.layout.story_handle, toolbar, false);
         toolbar.addView(handle);
-        View webbar = handle.findViewById(R.id.story_web_bar);
-        WebBarListener.bindWebController(webbar, new WebBarListener(webview, slidr));
-        View commentsbar = handle.findViewById(R.id.story_comments_bar);
-        CommentsBarListener.bindComments(commentsbar, new CommentsBarListener(story == null ? null : story.postWrapper.post.comments_url, inflater.getContext(), slidr));
-
     }
 
     private void initRecyclerView(View v, StoryMetadataWrapper story) {
@@ -159,17 +154,12 @@ public class StoryListFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(listener);
     }
 
-    private static WebView initWebView(View v, StoryMetadataWrapper story) {
+    private static WebView initWebView(View v) {
         WebView webview = (WebView) v.findViewById(R.id.webview);
         WebSettings settings = webview.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
-
-        if (story != null && story.postWrapper != null && story.postWrapper.post != null
-                && story.postWrapper.post.url != null) {
-            webview.loadUrl(story.postWrapper.post.url);
-        }
 
         final ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.webview_progress);
         webview.setWebChromeClient(new WebViewChromeClient(progressBar));
@@ -218,6 +208,15 @@ public class StoryListFragment extends Fragment {
 
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.content_view);
         if (recyclerView == null) return;
+
+        WebView webview = (WebView) v.findViewById(R.id.webview);
+        webview.loadUrl(story.post.url);
+
+        View webbar = v.findViewById(R.id.story_web_bar);
+        SlidingUpPanelLayout slidr = (SlidingUpPanelLayout) v.findViewById(R.id.slidinglayout);
+        WebBarListener.bindWebController(webbar, new WebBarListener(webview, slidr));
+        View commentsbar = v.findViewById(R.id.story_comments_bar);
+        CommentsBarListener.bindComments(commentsbar, new CommentsBarListener(story.post.comments_url, v.getContext(), slidr));
 
         StoryMetafiedListener listener = new StoryMetafiedListener(this, swipeRefreshLayout, recyclerView, null);
         task = new MetafyTask(story, v.getContext(), listener);
