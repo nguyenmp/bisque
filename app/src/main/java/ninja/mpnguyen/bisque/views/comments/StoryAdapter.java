@@ -20,14 +20,20 @@ import ninja.mpnguyen.bisque.views.progress.ProgressViewHolder;
 import ninja.mpnguyen.chowders.things.json.Post;
 
 public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final int TYPE_POST = 0, TYPE_COMMENT = 1, TYPE_ERROR = 2, TYPE_EMPTY = 3, TYPE_LOADING = 4;
+    private static final int TYPE_POST = 0, TYPE_COMMENT = 1, TYPE_ERROR = 2, TYPE_EMPTY = 3, TYPE_LOADING = 4, TYPE_HIDDEN_COMMENT = 5;
     private final StoryMetadataWrapper storyWrapper;
     private final boolean showLoading;
+    private final HideCommentListener hideListener;
 
-    public StoryAdapter(StoryMetadataWrapper storyWrapper, boolean showLoading) {
+    public interface HideCommentListener {
+        void setCommentHidden(CommentMetadataWrapper commentWrapper, boolean hidden);
+    }
+
+    public StoryAdapter(StoryMetadataWrapper storyWrapper, boolean showLoading, HideCommentListener hideListener) {
         super();
         this.storyWrapper = storyWrapper;
         this.showLoading = showLoading;
+        this.hideListener = hideListener;
         setHasStableIds(true);
     }
 
@@ -41,6 +47,8 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return PostsPresenter.inflateItem(inflater, viewGroup);
         } else if (itemType == TYPE_ERROR || itemType == TYPE_EMPTY) {
             return ErrorPresenter.inflateListItem(inflater, viewGroup);
+        } else if (itemType == TYPE_HIDDEN_COMMENT) {
+            return HiddenCommentPresenter.inflateListItem(inflater, viewGroup);
         } else {
             return ProgressPresenter.inflateListItem(inflater, viewGroup);
         }
@@ -57,6 +65,8 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return -1;
         } else if (type == TYPE_LOADING) {
             return -2;
+        } else if (type == TYPE_HIDDEN_COMMENT) {
+            return storyWrapper.commentWrappers[position - 1].comment.short_id.hashCode() * -1;
         } else {
             return -3;
         }
@@ -70,6 +80,7 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             else if (showLoading) return TYPE_LOADING;
             else if (storyWrapper.commentWrappers == null) return TYPE_ERROR;
             else if (storyWrapper.commentWrappers.length == 0) return TYPE_EMPTY;
+            else if (storyWrapper.commentWrappers[position - 1].metadata.hide_children) return TYPE_HIDDEN_COMMENT;
             else return TYPE_COMMENT;
         }
     }
@@ -81,8 +92,10 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             PostsPresenter.bindItem((PostViewHolder) viewHolder, storyWrapper.postWrapper);
             ((PostViewHolder) viewHolder).itemView.setOnClickListener(new PostClickListener(storyWrapper.postWrapper.post));
         } else if (type == TYPE_COMMENT){
+            CommentViewHolder commentHolder = (CommentViewHolder) viewHolder;
             CommentMetadataWrapper commentWrapper = storyWrapper.commentWrappers[position - 1];
-            CommentPresenter.bindListItem((CommentViewHolder) viewHolder, commentWrapper.comment);
+            CommentPresenter.bindListItem(commentHolder, commentWrapper.comment);
+            commentHolder.content.setOnClickListener(new CommentClickListener(commentWrapper, hideListener));
         } else if (type == TYPE_ERROR) {
             ErrorViewHolder errorViewHolder = (ErrorViewHolder) viewHolder;
             Context context = errorViewHolder.errorView.getContext();
@@ -102,6 +115,11 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             Context context = progressViewHolder.loadingText.getContext();
             String text = context.getString(R.string.comments);
             ProgressPresenter.bindListItem(progressViewHolder, text);
+        } else if (type == TYPE_HIDDEN_COMMENT) {
+            HiddenCommentViewHolder hiddenCommentViewHolder = (HiddenCommentViewHolder) viewHolder;
+            CommentMetadataWrapper commentWrapper = storyWrapper.commentWrappers[position - 1];
+            HiddenCommentPresenter.bindListItem(hiddenCommentViewHolder, commentWrapper);
+            hiddenCommentViewHolder.content.setOnClickListener(new CommentClickListener(commentWrapper, hideListener));
         }
     }
 
@@ -112,6 +130,21 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         else if (storyWrapper.commentWrappers == null) return 2;
         else if (storyWrapper.commentWrappers.length == 0) return 2;
         else return storyWrapper.commentWrappers.length + 1;
+    }
+
+    public static class CommentClickListener implements View.OnClickListener {
+        private final CommentMetadataWrapper commentWrapper;
+        private final HideCommentListener listener;
+
+        public CommentClickListener(CommentMetadataWrapper commentWrapper, HideCommentListener listener) {
+            this.commentWrapper = commentWrapper;
+            this.listener = listener;
+        }
+
+        @Override
+        public void onClick(View v) {
+            this.listener.setCommentHidden(commentWrapper, !commentWrapper.metadata.hide_children);
+        }
     }
 
     private static class PostClickListener implements View.OnClickListener {

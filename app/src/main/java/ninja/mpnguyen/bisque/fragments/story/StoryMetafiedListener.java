@@ -12,11 +12,13 @@ import ninja.mpnguyen.bisque.things.StoryMetadataWrapper;
 import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
 
 class StoryMetafiedListener extends RefreshingListener<StoryMetadataWrapper> {
+    private final WeakReference<StoryListFragment> fRef;
     private final WeakReference<RecyclerView> contentRef;
     private final StoryMetadataWrapper cachedStory;
 
-    StoryMetafiedListener(@Nullable SwipeRefreshLayout refreshLayout, @Nullable RecyclerView content, StoryMetadataWrapper cachedStory) {
+    StoryMetafiedListener(StoryListFragment f, @Nullable SwipeRefreshLayout refreshLayout, @Nullable RecyclerView content, StoryMetadataWrapper cachedStory) {
         super(refreshLayout);
+        this.fRef = new WeakReference<>(f);
         this.contentRef = new WeakReference<>(content);
         this.cachedStory = cachedStory;
     }
@@ -27,7 +29,7 @@ class StoryMetafiedListener extends RefreshingListener<StoryMetadataWrapper> {
 
         RecyclerView content = contentRef.get();
         if (content == null) return;
-        content.swapAdapter(new StoryAdapter(result, false), false);
+        content.swapAdapter(new StoryAdapter(result, false, new HideCommentListener(fRef.get())), false);
     }
 
     @Override
@@ -36,6 +38,6 @@ class StoryMetafiedListener extends RefreshingListener<StoryMetadataWrapper> {
 
         RecyclerView content = contentRef.get();
         if (content == null) return;
-        content.swapAdapter(new StoryAdapter(cachedStory, false), false);
+        content.swapAdapter(new StoryAdapter(cachedStory, false, new HideCommentListener(fRef.get())), false);
     }
 }

@@ -24,7 +24,6 @@ import java.util.List;
 
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.things.BisqueStory;
-import ninja.mpnguyen.bisque.things.PostMetadataWrapper;
 import ninja.mpnguyen.bisque.things.StoryMetadataWrapper;
 import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
 import ninja.mpnguyen.chowders.things.json.Post;
@@ -144,12 +143,12 @@ public class StoryListFragment extends Fragment {
 
     }
 
-    private static void initRecyclerView(View v, StoryMetadataWrapper story) {
+    private void initRecyclerView(View v, StoryMetadataWrapper story) {
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.content_view);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(v.getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.swapAdapter(new StoryAdapter(story, true), false);
+        recyclerView.swapAdapter(new StoryAdapter(story, true, new HideCommentListener(this)), false);
     }
 
     public static void initSwipeRefreshView(View v, SwipeRefreshLayout.OnRefreshListener listener) {
@@ -218,7 +217,7 @@ public class StoryListFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.content_view);
         if (recyclerView == null) return;
 
-        StoryMetafiedListener listener = new StoryMetafiedListener(swipeRefreshLayout, recyclerView, null);
+        StoryMetafiedListener listener = new StoryMetafiedListener(this, swipeRefreshLayout, recyclerView, null);
         task = new MetafyTask(story, v.getContext(), listener);
         task.execute();
     }

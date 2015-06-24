@@ -36,6 +36,6 @@ class StoryFetchedListener extends RefreshingListener<BisqueStory> {
 
         RecyclerView content = contentRef.get();
         if (content == null) return;
-        content.swapAdapter(new StoryAdapter(cachedStory, false), false);
+        content.swapAdapter(new StoryAdapter(cachedStory, false, new HideCommentListener(fRef.get())), false);
     }
 }
