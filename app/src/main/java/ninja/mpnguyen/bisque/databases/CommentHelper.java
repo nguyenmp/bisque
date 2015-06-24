@@ -36,6 +36,7 @@ public class CommentHelper extends Observable {
             if (commentMetadata == null) {
                 commentMetadata = createMetadata(comment, context);
             }
+            databaseHelper.close();
             return new CommentMetadataWrapper(commentMetadata, comment);
         }
     }
@@ -47,6 +48,7 @@ public class CommentHelper extends Observable {
             int update = dao.update(comment);
 
             observable.notifyChanged();
+            databaseHelper.close();
             return update == 1;
         }
     }
@@ -59,6 +61,7 @@ public class CommentHelper extends Observable {
             int create = dao.create(commentMetadata);
 
             observable.notifyChanged();
+            databaseHelper.close();
             return create == 1 ? commentMetadata : null;
         }
     }

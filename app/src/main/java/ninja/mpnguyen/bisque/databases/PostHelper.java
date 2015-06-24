@@ -36,6 +36,7 @@ public class PostHelper extends Observable {
             if (postMetadata == null) {
                 postMetadata = createMetadata(post, context);
             }
+            databaseHelper.close();
             return new PostMetadataWrapper(postMetadata, post);
         }
     }
@@ -47,6 +48,7 @@ public class PostHelper extends Observable {
             int update = dao.update(post);
 
             observable.notifyChanged();
+            databaseHelper.close();
             return update == 1;
         }
     }
@@ -59,6 +61,7 @@ public class PostHelper extends Observable {
             int create = dao.create(postMetadata);
 
             observable.notifyChanged();
+            databaseHelper.close();
             return create == 1 ? postMetadata : null;
         }
     }
