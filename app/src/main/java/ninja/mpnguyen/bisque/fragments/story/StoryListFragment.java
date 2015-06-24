@@ -20,13 +20,17 @@ import android.widget.ProgressBar;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 import ninja.mpnguyen.bisque.R;
+import ninja.mpnguyen.bisque.databases.CommentHelper;
 import ninja.mpnguyen.bisque.things.BisqueStory;
+import ninja.mpnguyen.bisque.things.CommentMetadataWrapper;
 import ninja.mpnguyen.bisque.things.StoryMetadataWrapper;
 import ninja.mpnguyen.bisque.views.comments.DividerItemDecoration;
 import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
+import ninja.mpnguyen.chowders.things.json.Comment;
 import ninja.mpnguyen.chowders.things.json.Post;
 
 public class StoryListFragment extends Fragment {
@@ -186,6 +190,24 @@ public class StoryListFragment extends Fragment {
         }
     }
 
+    public CommentMetadataWrapper[] filterHiddenComments(CommentMetadataWrapper[] comments) {
+        List<CommentMetadataWrapper> _commentWrappers = new ArrayList<>();
+        Integer hidingLevel = null;
+        for (CommentMetadataWrapper commentWrapper : comments) {
+            if (hidingLevel != null && commentWrapper.comment.indent_level > hidingLevel) {
+                // Ignore
+            } else {
+                _commentWrappers.add(commentWrapper);
+                hidingLevel = null;
+
+                if (commentWrapper.metadata.hide_children) {
+                    hidingLevel = commentWrapper.comment.indent_level;
+                }
+            }
+        }
+        return _commentWrappers.toArray(new CommentMetadataWrapper[_commentWrappers.size()]);
+    }
+
     /** The last metafication task that was run. Used to
      * cancel previous metifications so they don't overlap. */
     MetafyTask task = null;
@@ -210,18 +232,24 @@ public class StoryListFragment extends Fragment {
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe);
         if (swipeRefreshLayout == null) return;
 
+        bindToPost(v, story.post);
+
+        StoryMetafiedListener listener = new StoryMetafiedListener(this, swipeRefreshLayout, null);
+        task = new MetafyTask(story, v.getContext(), listener);
+        task.execute();
+    }
+
+    public static void bindToPost(View v, Post post) {
+        if (v == null) return;
+
         WebView webview = (WebView) v.findViewById(R.id.webview);
-        webview.loadUrl(story.post.url);
+        if (webview.getUrl() == null) webview.loadUrl(post.url);
 
         View webbar = v.findViewById(R.id.story_web_bar);
         SlidingUpPanelLayout slidr = (SlidingUpPanelLayout) v.findViewById(R.id.slidinglayout);
         WebBarListener.bindWebController(webbar, new WebBarListener(webview, slidr));
         View commentsbar = v.findViewById(R.id.story_comments_bar);
-        CommentsBarListener.bindComments(commentsbar, new CommentsBarListener(story.post.comments_url, v.getContext(), slidr));
-
-        StoryMetafiedListener listener = new StoryMetafiedListener(this, swipeRefreshLayout, null);
-        task = new MetafyTask(story, v.getContext(), listener);
-        task.execute();
+        CommentsBarListener.bindComments(commentsbar, new CommentsBarListener(post.comments_url, v.getContext(), slidr));
     }
 
     /** Puts this story into the cache and displays it */
@@ -230,11 +258,19 @@ public class StoryListFragment extends Fragment {
         Bundle args = getArguments();
         args.putSerializable(STATE_METAFIED_STORY, wrapper);
 
+        // Filter after we store into state
+        // We make a new wrapper because mutating the old one will also mutate the serialization
+        // into the bundle above.  This is some weird deferred serialization aspect of bundles apparently.
+        StoryMetadataWrapper filteredWrapper = new StoryMetadataWrapper();
+        filteredWrapper.postWrapper = wrapper.postWrapper;
+        filteredWrapper.commentWrappers = filterHiddenComments(wrapper.commentWrappers);
+
         // Push content onto screen
         View v = getView();
         if (v == null) return;
+        bindToPost(v, filteredWrapper.postWrapper.post);
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.content_view);
-        recyclerView.swapAdapter(new StoryAdapter(wrapper, false, new HideCommentListener(this)), false);
+        recyclerView.swapAdapter(new StoryAdapter(filteredWrapper, false, new HideCommentListener(this)), false);
     }
 
     @Override

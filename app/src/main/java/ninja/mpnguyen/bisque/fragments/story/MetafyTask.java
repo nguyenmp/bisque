@@ -43,20 +43,9 @@ class MetafyTask extends FetcherTask<StoryMetadataWrapper> {
             CommentMetadataWrapper[] commentWrappers = null;
             if (story.comments != null) {
                 List<CommentMetadataWrapper> _commentWrappers = new ArrayList<>();
-                Integer hidingLevel = null;
                 for (Comment comment : story.comments) {
                     CommentMetadataWrapper commentWrapper = CommentHelper.getMetadata(comment, context);
-
-                    if (hidingLevel != null && commentWrapper.comment.indent_level > hidingLevel) {
-                        // Ignore
-                    } else {
-                        _commentWrappers.add(commentWrapper);
-                        hidingLevel = null;
-
-                        if (commentWrapper.metadata.hide_children) {
-                            hidingLevel = commentWrapper.comment.indent_level;
-                        }
-                    }
+                    _commentWrappers.add(commentWrapper);
                 }
                 commentWrappers = _commentWrappers.toArray(new CommentMetadataWrapper[_commentWrappers.size()]);
             }
