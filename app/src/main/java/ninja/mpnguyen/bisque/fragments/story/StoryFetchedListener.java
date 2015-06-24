@@ -12,12 +12,10 @@ import ninja.mpnguyen.bisque.things.StoryMetadataWrapper;
 
 class StoryFetchedListener extends RefreshingListener<BisqueStory> {
     private final WeakReference<StoryListFragment> fRef;
-    private final StoryMetadataWrapper cachedStory;
 
-    StoryFetchedListener(@Nullable StoryListFragment f, @Nullable SwipeRefreshLayout refreshLayout, StoryMetadataWrapper cachedStory) {
+    StoryFetchedListener(@Nullable StoryListFragment f, @Nullable SwipeRefreshLayout refreshLayout) {
         super(refreshLayout);
         this.fRef = new WeakReference<>(f);
-        this.cachedStory = cachedStory;
     }
 
     @Override
@@ -31,6 +29,6 @@ class StoryFetchedListener extends RefreshingListener<BisqueStory> {
         super.onError();
 
         StoryListFragment f = fRef.get();
-        if (f != null) f.updateMetadata(cachedStory);
+        if (f != null) f.updateMetadata();
     }
 }

@@ -24,13 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ninja.mpnguyen.bisque.R;
-import ninja.mpnguyen.bisque.databases.CommentHelper;
+import ninja.mpnguyen.bisque.nio.SimpleDualListener;
 import ninja.mpnguyen.bisque.things.BisqueStory;
 import ninja.mpnguyen.bisque.things.CommentMetadataWrapper;
 import ninja.mpnguyen.bisque.things.StoryMetadataWrapper;
 import ninja.mpnguyen.bisque.views.comments.DividerItemDecoration;
 import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
-import ninja.mpnguyen.chowders.things.json.Comment;
 import ninja.mpnguyen.chowders.things.json.Post;
 
 public class StoryListFragment extends Fragment {
@@ -261,14 +260,17 @@ public class StoryListFragment extends Fragment {
         // Filter after we store into state
         // We make a new wrapper because mutating the old one will also mutate the serialization
         // into the bundle above.  This is some weird deferred serialization aspect of bundles apparently.
-        StoryMetadataWrapper filteredWrapper = new StoryMetadataWrapper();
-        filteredWrapper.postWrapper = wrapper.postWrapper;
-        filteredWrapper.commentWrappers = filterHiddenComments(wrapper.commentWrappers);
+        StoryMetadataWrapper filteredWrapper = null;
+        if (wrapper != null) {
+            filteredWrapper = new StoryMetadataWrapper();
+            filteredWrapper.postWrapper = wrapper.postWrapper;
+            filteredWrapper.commentWrappers = filterHiddenComments(wrapper.commentWrappers);
+        }
 
         // Push content onto screen
         View v = getView();
         if (v == null) return;
-        bindToPost(v, filteredWrapper.postWrapper.post);
+        if (filteredWrapper != null) bindToPost(v, filteredWrapper.postWrapper.post);
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.content_view);
         recyclerView.swapAdapter(new StoryAdapter(filteredWrapper, false, new HideCommentListener(this)), false);
     }
@@ -320,8 +322,10 @@ public class StoryListFragment extends Fragment {
         if (swipeRefreshLayout == null) return;
 
         String short_id = getShortIDFromArgs();
-        StoryFetchedListener listener = new StoryFetchedListener(this, swipeRefreshLayout, getStoryFromArgs());
-        new StoryFetcherTask(listener, short_id).execute();
+
+        StoryFetchedListener listener = new StoryFetchedListener(this, swipeRefreshLayout);
+        SimpleDualListener<BisqueStory> dualListener = new SimpleDualListener<>(listener);
+        new CachedFetcher(short_id, dualListener).call();
     }
 
     /** Indirection listener which allows us to prevent memory leaking our fragment + context */
