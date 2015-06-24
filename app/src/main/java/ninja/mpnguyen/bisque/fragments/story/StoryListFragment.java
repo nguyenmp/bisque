@@ -25,6 +25,7 @@ import java.util.List;
 import ninja.mpnguyen.bisque.R;
 import ninja.mpnguyen.bisque.things.BisqueStory;
 import ninja.mpnguyen.bisque.things.StoryMetadataWrapper;
+import ninja.mpnguyen.bisque.views.comments.DividerItemDecoration;
 import ninja.mpnguyen.bisque.views.comments.StoryAdapter;
 import ninja.mpnguyen.chowders.things.json.Post;
 
@@ -148,6 +149,7 @@ public class StoryListFragment extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(v.getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(v.getContext(), DividerItemDecoration.VERTICAL_LIST));
         recyclerView.swapAdapter(new StoryAdapter(story, true, new HideCommentListener(this)), false);
     }
 
