@@ -1,5 +1,7 @@
 package ninja.mpnguyen.bisque.views.comments;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +25,9 @@ public class HiddenCommentPresenter {
         layoutParams.width = (comment.indent_level - 1) * 40;
         vh.padding.setLayoutParams(layoutParams);
 
-        vh.author.setText(author);
-        vh.points.setText(Integer.toString(points));
+        vh.author.setText(author + " ");
+        Context c = vh.itemView.getContext();
+        Resources rs = c.getResources();
+        vh.points.setText(rs.getQuantityString(R.plurals.x_points, points, points));
     }
 }

@@ -9,6 +9,10 @@
     <string name="loading_x">Loading %s</string>
     <string name="by_x">By %s</string>
     <string name="x_comments">%s comments</string>
+    <plurals name="x_points">
+        <item quantity="one">%d point</item>
+        <item quantity="other">%d points</item>
+    </plurals>
     <string name="new_comments">(%d new)</string>
     <string name="profile_picture">Profile Picture</string>
     <string name="mail">Mail</string>

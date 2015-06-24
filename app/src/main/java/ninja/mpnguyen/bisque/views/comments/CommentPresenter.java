@@ -1,5 +1,7 @@
 package ninja.mpnguyen.bisque.views.comments;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.Html;
@@ -32,7 +34,7 @@ public class CommentPresenter {
         Spanned spanned = processCommentText(comment);
         holder.comment_text.setText(spanned);
         holder.comment_text.setMovementMethod(LinkMovementMethod.getInstance());
-        Spanned heading = getHeading(comment);
+        Spanned heading = getHeading(comment, holder.itemView.getContext());
         holder.comment_author.setText(heading);
 
         ViewGroup.LayoutParams layoutParams = holder.padding.getLayoutParams();
@@ -40,10 +42,13 @@ public class CommentPresenter {
         holder.padding.setLayoutParams(layoutParams);
     }
 
-    private static Spanned getHeading(Comment comment) {
+    private static Spanned getHeading(Comment comment, Context context) {
         SpannableStringBuilder b = new SpannableStringBuilder(comment.commenting_user.username);
         b.setSpan(new StyleSpan(Typeface.BOLD), 0, b.length(), 0);
-        b.append(" ").append(Integer.toString(comment.score)).append(" points ");
+
+        Resources rs = context.getResources();
+        String points = rs.getQuantityString(R.plurals.x_points, comment.score, comment.score);
+        b.append(" ").append(points);
         return b;
     }
 
