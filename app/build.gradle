@@ -13,8 +13,8 @@ android {
         applicationId "ninja.mpnguyen.bisque"
         minSdkVersion 21
         targetSdkVersion 22
-        versionCode 4
-        versionName "0.0.3"
+        versionCode 5
+        versionName "0.0.4"
     }
     buildTypes {
         debug {
