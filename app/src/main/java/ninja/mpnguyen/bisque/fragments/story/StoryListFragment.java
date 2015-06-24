@@ -168,15 +168,19 @@ public class StoryListFragment extends Fragment {
     }
 
     /**
-     * Tries to pull previous non-metafied data from our state and metafy it.
-     *
-     * The result of this metafication should be stored into the state afterwards.
+     * Tries to pull previous data from our state.  If this data is metafied,
+     * just display it.  Otherwise, metafy it and display it.
      *
      * If no data is found, we simply drop this call.
+     *
+     * @see #onRefresh()
      */
     public void updateMetadata() {
         Bundle args = getArguments();
-        if (args.containsKey(STATE_STORY)) {
+        if (args.containsKey(STATE_METAFIED_STORY)) {
+            StoryMetadataWrapper wrapper = (StoryMetadataWrapper) args.getSerializable(STATE_METAFIED_STORY);
+            updateMetadata(wrapper);
+        } else if (args.containsKey(STATE_STORY)) {
             BisqueStory story = (BisqueStory) args.getSerializable(STATE_STORY);
             updateMetadata(story);
         }
@@ -206,9 +210,6 @@ public class StoryListFragment extends Fragment {
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe);
         if (swipeRefreshLayout == null) return;
 
-        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.content_view);
-        if (recyclerView == null) return;
-
         WebView webview = (WebView) v.findViewById(R.id.webview);
         webview.loadUrl(story.post.url);
 
@@ -218,9 +219,22 @@ public class StoryListFragment extends Fragment {
         View commentsbar = v.findViewById(R.id.story_comments_bar);
         CommentsBarListener.bindComments(commentsbar, new CommentsBarListener(story.post.comments_url, v.getContext(), slidr));
 
-        StoryMetafiedListener listener = new StoryMetafiedListener(this, swipeRefreshLayout, recyclerView, null);
+        StoryMetafiedListener listener = new StoryMetafiedListener(this, swipeRefreshLayout, null);
         task = new MetafyTask(story, v.getContext(), listener);
         task.execute();
+    }
+
+    /** Puts this story into the cache and displays it */
+    public void updateMetadata(StoryMetadataWrapper wrapper) {
+        // Store result into state
+        Bundle args = getArguments();
+        args.putSerializable(STATE_METAFIED_STORY, wrapper);
+
+        // Push content onto screen
+        View v = getView();
+        if (v == null) return;
+        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.content_view);
+        recyclerView.swapAdapter(new StoryAdapter(wrapper, false, new HideCommentListener(this)), false);
     }
 
     @Override
@@ -237,6 +251,8 @@ public class StoryListFragment extends Fragment {
                 }
             }
         }, 300);
+
+        updateMetadata();
 
         onRefresh();
     }
@@ -267,11 +283,8 @@ public class StoryListFragment extends Fragment {
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe);
         if (swipeRefreshLayout == null) return;
 
-        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.content_view);
-        if (recyclerView == null) return;
-
         String short_id = getShortIDFromArgs();
-        StoryFetchedListener listener = new StoryFetchedListener(this, swipeRefreshLayout, recyclerView, getStoryFromArgs());
+        StoryFetchedListener listener = new StoryFetchedListener(this, swipeRefreshLayout, getStoryFromArgs());
         new StoryFetcherTask(listener, short_id).execute();
     }
 

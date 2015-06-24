@@ -41,16 +41,19 @@ public class StoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story);
 
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction t = fm.beginTransaction();
+        // Only add fragment if we're not restoring from some previous instance
+        if (savedInstanceState == null) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction t = fm.beginTransaction();
 
-        StoryListFragment f = new StoryListFragment.Builder()
-                .post(getStoryFromIntent())
-                .shortID(getShortId(getIntent().getData()))
-                .showCommentsFirst(getIntent().getBooleanExtra(EXTRA_COMMENTS, false))
-                .build();
-        t.add(R.id.content_primary, f);
-        t.commit();
+            StoryListFragment f = new StoryListFragment.Builder()
+                    .post(getStoryFromIntent())
+                    .shortID(getShortId(getIntent().getData()))
+                    .showCommentsFirst(getIntent().getBooleanExtra(EXTRA_COMMENTS, false))
+                    .build();
+            t.add(R.id.content_primary, f);
+            t.commit();
+        }
     }
 
     private Story getStoryFromIntent() {

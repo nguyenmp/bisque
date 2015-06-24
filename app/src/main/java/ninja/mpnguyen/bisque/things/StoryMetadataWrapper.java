@@ -1,6 +1,8 @@
 package ninja.mpnguyen.bisque.things;
 
-public class StoryMetadataWrapper {
+import java.io.Serializable;
+
+public class StoryMetadataWrapper implements Serializable {
     public PostMetadataWrapper postWrapper;
     public CommentMetadataWrapper[] commentWrappers;
 }
