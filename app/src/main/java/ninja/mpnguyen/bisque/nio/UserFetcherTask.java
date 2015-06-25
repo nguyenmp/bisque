@@ -13,6 +13,6 @@ public class UserFetcherTask extends FetcherTask<User> {
 
     @Override
     public User doBlockingStuff() throws Exception {
-        return new UserFetcher(username).get();
+        return new UserFetcher(username).call();
     }
 }
