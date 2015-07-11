@@ -19,6 +19,16 @@ import ninja.mpnguyen.chowders.things.html.Auth;
 public class AccountsHelper extends Observable {
     public static AccountsHelper observable = new AccountsHelper();
 
+    public static class State {
+        public final Account activeAccount;
+        public final Account[] accounts;
+
+        public State(Account activeAccount, Account[] accounts) {
+            this.activeAccount = activeAccount;
+            this.accounts = accounts;
+        }
+    }
+
     private AccountsHelper() {
         super();
     }
@@ -102,6 +112,14 @@ public class AccountsHelper extends Observable {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
             preferences.edit().putInt(ACTIVE_ACCOUNT_ID_KEY, account.id).apply();
             observable.notifyChanged();
+        }
+    }
+
+    public static State getState(Context context) throws SQLException {
+        synchronized (DatabaseHelper.dbLock) {
+            Account activeAccount = getActiveAccount(context);
+            Account[] accounts = getAccounts(context);
+            return new State(activeAccount, accounts);
         }
     }
 

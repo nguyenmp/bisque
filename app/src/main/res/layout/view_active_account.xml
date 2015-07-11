@@ -2,6 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/active_account_container"
+    android:clickable="true"
     android:layout_width="match_parent"
     android:layout_height="180dp" >
 
@@ -9,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/navigation_drawer_image_height"
         android:scaleType="centerCrop"
-        android:clickable="true"
         android:paddingBottom="8dp"
         android:src="@drawable/paper_image"/>
 

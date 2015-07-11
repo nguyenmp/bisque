@@ -1,20 +1,9 @@
-<LinearLayout
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
+    android:id="@+id/nav_list"
+    style="@style/CardsList"
+    android:background="@color/white"
+    android:scrollbars="vertical"
     android:layout_width="match_parent"
-    android:orientation="vertical" >
-
-    <include layout="@layout/view_active_account" />
-
-    <ListView
-        android:paddingTop="8dp"
-        android:id="@+id/nav_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="@color/white"
-        tools:context="ninja.mpnguyen.bisque.NavigationDrawerFragment" />
-
-</LinearLayout>
+    android:layout_height="match_parent"/>
