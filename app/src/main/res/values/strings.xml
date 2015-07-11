@@ -35,4 +35,9 @@
     <string name="open_in_browser">Open In Browser</string>
     <string name="share">Share</string>
     <string name="link">Link</string>
+    <string name="anonymous">Anonymous</string>
+    <string name="not_logged_in">Not Logged In</string>
+
+    <string name="not_logged_in_username">@string/anonymous</string>
+    <string name="not_logged_in_email">@string/not_logged_in</string>
 </resources>

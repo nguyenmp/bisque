@@ -12,6 +12,7 @@ import java.sql.SQLException;
 
 import ninja.mpnguyen.bisque.things.CommentMetadata;
 import ninja.mpnguyen.bisque.things.PostMetadata;
+import ninja.mpnguyen.chowders.things.html.Auth;
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     // name of the database file for your application -- change to something appropriate for your app
@@ -32,6 +33,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                 @Override
                 public Class getDataClass() {
                     return CommentMetadata.class;
+                }
+            },
+            new BasicDaoContainer() {
+                @Override
+                public Class getDataClass() {
+                    return AccountsHelper.Account.class;
                 }
             }
     };
@@ -67,19 +74,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
 
     /**
-     * Returns the Database Access Object (DAO) for our PostMetadata class. It will create it or just give the cached
-     * value.
+     * Returns the Database Access Object (DAO) for our PostMetadata class.
+     * It will create it or just give the cached value.
      */
     public Dao<PostMetadata, Integer> getPostDao() throws SQLException {
         return daos[0].getDao(this);
     }
 
     /**
-     * Returns the Database Access Object (DAO) for our PostMetadata class. It will create it or just give the cached
-     * value.
+     * Returns the Database Access Object (DAO) for our CommentMetadata class.
+     * It will create it or just give the cached value.
      */
     public Dao<CommentMetadata, Integer> getCommentDao() throws SQLException {
         return daos[1].getDao(this);
+    }
+
+    /**
+     * Returns the Database Access Object (DAO) for our Account class.
+     * It will create it or just give the cached value.
+     */
+    public Dao<AccountsHelper.Account, Integer> getAccountDao() throws SQLException {
+        return daos[2].getDao(this);
     }
 
     /**
